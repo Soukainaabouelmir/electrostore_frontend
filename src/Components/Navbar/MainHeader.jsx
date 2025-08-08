@@ -70,7 +70,7 @@ const MainHeader = () => {
             
             >
              
-                <FiUser className="text-xl text-gray-500" />
+                <FiUser className="text-xl text-gray-500 dark:text-orange-300" />
           
              
             </button>

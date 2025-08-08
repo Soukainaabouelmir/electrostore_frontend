@@ -179,7 +179,7 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
     const isExpanded = expandedSections[section.id];
     
     return (
-      <div className="mb-6 border-b border-gray-200 dark:border-gray-700 pb-4">
+      <div className="mb-6 border-b border-gray-200 dark:bg-[#1e1e1e] dark:border-gray-700 pb-4">
         <button
           onClick={() => toggleSection(section.id)}
           className="flex items-center justify-between w-full text-left font-semibold text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors mb-3"
@@ -236,7 +236,7 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
   );
 
   return (
-    <aside className="w-full md:w-1/4 p-4 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+    <aside className="w-full md:w-1/4 p-4 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1e1e1e]">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 flex items-center">
@@ -281,7 +281,6 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
         ))}
       </div>
 
-      {/* Nombre de filtres actifs */}
       {hasActiveFilters && (
         <div className="mt-6 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
           <p className="text-sm text-blue-800 dark:text-blue-300">
