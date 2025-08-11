@@ -16,11 +16,13 @@ import {
   FiZap,
   FiGift
 } from 'react-icons/fi';
-import { useCart } from '../Panier/CartContext';
+import { useNavigate } from 'react-router-dom';
+import { useCart } from '../Panier/CartContext ';
+
 
 const ProductDetails = ({ productId, onClose }) => {
   const { addToCart } = useCart();
-  
+   const navigate = useNavigate(); 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -29,9 +31,7 @@ const ProductDetails = ({ productId, onClose }) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
 
-  // Mock product data - En production, cela viendrait de votre API
   useEffect(() => {
-    // Simuler un appel API
     setTimeout(() => {
       setProduct({
         id: productId,
@@ -127,7 +127,7 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-[#141414] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-400">Chargement du produit...</p>
@@ -138,7 +138,7 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-[#141414] flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Produit introuvable</h2>
           <button
@@ -154,44 +154,24 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
 
   const ProductIcon = getProductIcon(product.category);
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header avec navigation */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div className="min-h-screen bg-white dark:bg-[#141414]">
+      <div className="bg-white dark:bg-[#141414] ">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
           <div className="flex items-center justify-between">
             <button
-              onClick={() => navigate(-1)}
-              className="flex items-center text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-            >
+              onClick={() => onClose ? onClose() : navigate(-1)} 
+              className="flex items-center text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
               <FiArrowLeft className="mr-2" size={20} />
               Retour
             </button>
-            
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setIsWishlisted(!isWishlisted)}
-                className={`p-2 rounded-full transition-colors ${
-                  isWishlisted 
-                    ? 'text-red-500 bg-red-50 dark:bg-red-900/20' 
-                    : 'text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20'
-                }`}
-              >
-                <FiHeart className={isWishlisted ? 'fill-current' : ''} size={20} />
-              </button>
-              <button className="p-2 rounded-full text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
-                <FiShare2 size={20} />
-              </button>
-            </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Section Images */}
           <div className="space-y-4">
-            {/* Image principale */}
-            <div className="relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg">
+            <div className="relative bg-white dark:bg-[#1e1e1e] rounded-2xl overflow-hidden shadow-lg">
               {discountPercent > 0 && (
                 <div className="absolute top-4 right-4 z-10 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
                   -{discountPercent}%
@@ -210,8 +190,6 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
                 className="w-full h-96 object-cover"
               />
             </div>
-
-            {/* Miniatures */}
             <div className="flex space-x-4 overflow-x-auto">
               {product.images.map((image, index) => (
                 <button
@@ -232,10 +210,7 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
               ))}
             </div>
           </div>
-
-          {/* Section Informations */}
           <div className="space-y-6">
-            {/* En-tête produit */}
             <div>
               <div className="flex items-center space-x-2 mb-2">
                 <span className="text-sm text-blue-600 dark:text-blue-400 font-medium">
@@ -278,9 +253,7 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
                 </span>
               </div>
             </div>
-
-            {/* Prix */}
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+            <div className="bg-gray-50 dark:bg-[#1e1e1e] rounded-lg p-6">
               <div className="flex items-center space-x-4 mb-2">
                 <span className="text-3xl font-bold text-green-600 dark:text-green-400">
                   {product.price.toLocaleString()} MAD
@@ -297,8 +270,6 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
                 </p>
               )}
             </div>
-
-            {/* Caractéristiques principales */}
             <div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
                 Caractéristiques principales
@@ -312,8 +283,6 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
                 ))}
               </div>
             </div>
-
-            {/* Quantité et Achat */}
             <div className="space-y-4">
               <div className="flex items-center space-x-4">
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -346,8 +315,6 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
                 Ajouter au panier • {(product.price * quantity).toLocaleString()} MAD
               </button>
             </div>
-
-            {/* Services */}
             <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
               <div className="text-center">
                 <FiTruck className="w-8 h-8 text-blue-500 mx-auto mb-2" />
@@ -371,7 +338,6 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
           </div>
         </div>
 
-        {/* Onglets de détails */}
         <div className="mt-12">
           <div className="border-b border-gray-200 dark:border-gray-700">
             <nav className="flex space-x-8">
@@ -396,10 +362,9 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
               ))}
             </nav>
           </div>
-
           <div className="py-8">
             {activeTab === 'specs' && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+              <div className="bg-white dark:bg-[#1e1e1e] rounded-lg p-6 shadow-sm">
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
                   Spécifications techniques
                 </h3>
@@ -419,7 +384,7 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
             )}
 
             {activeTab === 'description' && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+              <div className="bg-white dark:bg-[#1e1e1e] rounded-lg p-6 shadow-sm">
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
                   Description détaillée
                 </h3>
@@ -438,7 +403,7 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
             )}
 
             {activeTab === 'compatibility' && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+              <div className="bg-white dark:bg-[#1e1e1e] rounded-lg p-6 shadow-sm">
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
                   Jeux compatibles
                 </h3>
@@ -456,7 +421,7 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
             )}
 
             {activeTab === 'accessories' && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+              <div className="bg-white dark:bg-[#1e1e1e] rounded-lg p-6 shadow-sm">
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
                   Accessoires inclus
                 </h3>

@@ -1,8 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import PcGamerFilter from './PcGamerFilter';
 import PcGamerList from './PcGamerList';
+import ProductDetails from '../../Shared/ProductDetails';
 
 const PcGamerPage = () => {
+  // État pour gérer le produit sélectionné
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const [filters, setFilters] = useState({
     prix: '',
@@ -33,7 +36,7 @@ const PcGamerPage = () => {
       features: ["RTX 4070", "Intel i7", "16GB DDR4"],
       promotion: true
     },
-    { 
+       { 
       id: 2, 
       name: "PC Gaming MSI Aegis RS 13", 
       price: 1599, 
@@ -205,9 +208,9 @@ const PcGamerPage = () => {
       features: ["RTX 4060", "Ryzen 5", "16GB DDR4"],
       promotion: true
     },
+    // Ajoutez d'autres produits ici...
   ];
 
- 
   const filteredProducts = useMemo(() => {
     return allProducts.filter(product => {
       
@@ -242,7 +245,6 @@ const PcGamerPage = () => {
         if (!hasRamMatch) return false;
       }
 
-      // Filtre stockage
       if (filters.stockage.length > 0) {
         const hasStorageMatch = filters.stockage.some(storage => {
           return product.stockage === storage || 
@@ -253,11 +255,9 @@ const PcGamerPage = () => {
         if (!hasStorageMatch) return false;
       }
 
-
       if (filters.performance) {
         if (product.performance !== filters.performance) return false;
       }
-
 
       if (filters.disponibilite) {
         if (product.disponibilite !== filters.disponibilite) return false;
@@ -289,38 +289,60 @@ const PcGamerPage = () => {
     });
   };
 
+  // Fonctions pour gérer la sélection de produit
+  const handleProductSelect = (product) => {
+    setSelectedProduct(product);
+  };
+
+  const handleBackToList = () => {
+    setSelectedProduct(null);
+  };
+
   return (
-    <div className="min-h-screen bg-white dark:bg-[#141414] ">
+    <div className="min-h-screen bg-white dark:bg-[#141414]">
       <div className="max-w-7xl mx-auto">
         {/* En-tête de la page */}
         <div className="mb-1 text-center py-4 md:text-left"></div>
-        <div className="flex flex-col md:flex-row gap-1">
-          <PcGamerFilter 
-            onFilterChange={handleFilterChange} 
-            onClearFilters={handleClearFilters} 
-          />
-          <div className="flex-1">
-            {filteredProducts.length > 0 ? (
-              <PcGamerList products={filteredProducts} />
-            ) : (
-              <div className="text-center ">
-                <div className="text-6xl ">🔍</div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white ">
-                  Aucun produit trouvé
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 ">
-                  Essayez de modifier vos critères de recherche
-                </p>
-                <button
-                  onClick={handleClearFilters}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
-                >
-                  Effacer tous les filtres
-                </button>
-              </div>
-            )}
+        
+        {/* Afficher le layout normal uniquement si aucun produit n'est sélectionné */}
+        {!selectedProduct ? (
+          <div className="flex flex-col md:flex-row gap-1">
+            <PcGamerFilter 
+              onFilterChange={handleFilterChange} 
+              onClearFilters={handleClearFilters} 
+            />
+            <div className="flex-1">
+              {filteredProducts.length > 0 ? (
+                <PcGamerList 
+                  products={filteredProducts} 
+                  onProductSelect={handleProductSelect}
+                />
+              ) : (
+                <div className="text-center">
+                  <div className="text-6xl">🔍</div>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                    Aucun produit trouvé
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Essayez de modifier vos critères de recherche
+                  </p>
+                  <button
+                    onClick={handleClearFilters}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+                  >
+                    Effacer tous les filtres
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        ) : (
+          // Afficher les détails du produit en plein écran
+          <ProductDetails 
+            productId={selectedProduct.id} 
+            onClose={handleBackToList}
+          />
+        )}
       </div>
     </div>
   );

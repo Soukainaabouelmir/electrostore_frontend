@@ -3,7 +3,7 @@ import { FiSmartphone, FiHeadphones, FiMonitor, FiWatch, FiTablet, FiAnchor, FiC
 import { useCart } from '../Panier/CartContext ';
 
 
-const ProductsSection = () => {
+const ProductsSection = (product, onViewDetails) => {
   const [showMore, setShowMore] = useState(false);
   const { addToCart } = useCart();
 
@@ -143,6 +143,12 @@ const ProductsSection = () => {
     }
   ];
 
+
+    const handleViewDetails = () => {
+  if (onViewDetails) {
+    onViewDetails(product);
+  }
+};
   // Afficher seulement les 8 premiers produits initialement
   const displayedProducts = showMore ? allProducts : allProducts.slice(0, 8);
 
@@ -207,7 +213,9 @@ const ProductsSection = () => {
           
           {/* Overlay au hover */}
           <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-            <button className="bg-white text-gray-800 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full font-medium opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-gray-100 text-xs">
+            <button 
+            onClick={handleViewDetails}
+            className="bg-white text-gray-800 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full font-medium opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-gray-100 text-xs">
               Voir détails
             </button>
           </div>
