@@ -3,7 +3,7 @@ import { FiMonitor, FiCpu, FiHardDrive, FiZap } from 'react-icons/fi';
 import { useCart } from '../../Panier/CartContext ';
 
 
-const PcGamerCard = ({ product }) => {
+const PcGamerCard = ({ product,onViewDetails  }) => {
   const { addToCart } = useCart();
 
   const handleAddToCart = (product) => {
@@ -19,11 +19,18 @@ const PcGamerCard = ({ product }) => {
       }, 1500);
     }
   };
+   const handleViewDetails = () => {
+  if (onViewDetails) {
+    onViewDetails(product);
+  }
+};
+
 
   // Calcul du pourcentage de réduction si les prix sont disponibles
   const discountPercent = product.original_price ? 
     Math.round(((product.original_price - product.price) / product.original_price) * 100) : 0;
 
+  
   // Icône selon le type de PC ou composant
   const getProductIcon = () => {
     const name = product.name.toLowerCase();
@@ -94,11 +101,15 @@ const PcGamerCard = ({ product }) => {
         />
         
         {/* Overlay au hover */}
-        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-          <button className="bg-white text-gray-800 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full font-medium opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-gray-100 text-xs">
-            Voir détails
-          </button>
-        </div>
+       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+  <button
+    onClick={handleViewDetails}
+    className="bg-white text-gray-800 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full font-medium opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-gray-100 text-xs"
+  >
+    Voir détails
+  </button>
+</div>
+
       </div>
 
       {/* Contenu de la carte */}

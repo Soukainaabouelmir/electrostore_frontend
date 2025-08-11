@@ -25,11 +25,17 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
     promotion: false
   });
 
+  const [showFilters, setShowFilters] = useState(false);
+
   const toggleSection = (section) => {
     setExpandedSections(prev => ({
       ...prev,
       [section]: !prev[section]
     }));
+  };
+
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
   };
 
   const handleFilterChange = (category, value, isChecked = null) => {
@@ -70,107 +76,114 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
   const filterSections = [
     {
       id: 'prix',
-      title: 'Prix',
+      title: '💰 Budget',
       type: 'radio',
+      icon: '💰',
       options: [
-        { value: '0-500', label: 'Moins de 500€' },
-        { value: '500-800', label: '500€ - 800€' },
-        { value: '800-1200', label: '800€ - 1200€' },
-        { value: '1200-1800', label: '1200€ - 1800€' },
-        { value: '1800-2500', label: '1800€ - 2500€' },
-        { value: '2500+', label: 'Plus de 2500€' }
+        { value: '0-500', label: '< 500€', color: 'text-green-600' },
+        { value: '500-800', label: '500€ - 800€', color: 'text-blue-600' },
+        { value: '800-1200', label: '800€ - 1200€', color: 'text-purple-600' },
+        { value: '1200-1800', label: '1200€ - 1800€', color: 'text-orange-600' },
+        { value: '1800-2500', label: '1800€ - 2500€', color: 'text-red-600' },
+        { value: '2500+', label: '> 2500€', color: 'text-red-800' }
       ]
     },
     {
       id: 'marque',
-      title: 'Marque',
+      title: '🏷️ Marque',
       type: 'checkbox',
+      icon: '🏷️',
       options: [
-        { value: 'asus', label: 'ASUS' },
-        { value: 'msi', label: 'MSI' },
+        { value: 'asus', label: 'ASUS', popular: true },
+        { value: 'msi', label: 'MSI', popular: true },
         { value: 'alienware', label: 'Alienware' },
         { value: 'hp', label: 'HP Omen' },
-        { value: 'corsair', label: 'Corsair' },
+        { value: 'corsair', label: 'Corsair', popular: true },
         { value: 'nzxt', label: 'NZXT' },
         { value: 'origin', label: 'Origin PC' }
       ]
     },
     {
       id: 'processeur',
-      title: 'Processeur',
+      title: '⚡ Processeur',
       type: 'checkbox',
+      icon: '⚡',
       options: [
-        { value: 'intel-i5', label: 'Intel Core i5' },
-        { value: 'intel-i7', label: 'Intel Core i7' },
-        { value: 'intel-i9', label: 'Intel Core i9' },
-        { value: 'amd-ryzen5', label: 'AMD Ryzen 5' },
-        { value: 'amd-ryzen7', label: 'AMD Ryzen 7' },
-        { value: 'amd-ryzen9', label: 'AMD Ryzen 9' }
+        { value: 'intel-i5', label: 'Intel i5', popular: true },
+        { value: 'intel-i7', label: 'Intel i7', popular: true },
+        { value: 'intel-i9', label: 'Intel i9' },
+        { value: 'amd-ryzen5', label: 'Ryzen 5', popular: true },
+        { value: 'amd-ryzen7', label: 'Ryzen 7', popular: true },
+        { value: 'amd-ryzen9', label: 'Ryzen 9' }
       ]
     },
     {
       id: 'carteGraphique',
-      title: 'Carte Graphique',
+      title: '🎮 GPU',
       type: 'checkbox',
+      icon: '🎮',
       options: [
-        { value: 'rtx4060', label: 'RTX 4060' },
+        { value: 'rtx4060', label: 'RTX 4060', popular: true },
         { value: 'rtx4060ti', label: 'RTX 4060 Ti' },
-        { value: 'rtx4070', label: 'RTX 4070' },
+        { value: 'rtx4070', label: 'RTX 4070', popular: true },
         { value: 'rtx4070super', label: 'RTX 4070 Super' },
         { value: 'rtx4080', label: 'RTX 4080' },
         { value: 'rtx4090', label: 'RTX 4090' },
-        { value: 'rx7600', label: 'AMD RX 7600' },
-        { value: 'rx7700xt', label: 'AMD RX 7700 XT' },
-        { value: 'rx7800xt', label: 'AMD RX 7800 XT' },
-        { value: 'rx7900xt', label: 'AMD RX 7900 XT' }
+        { value: 'rx7600', label: 'RX 7600' },
+        { value: 'rx7700xt', label: 'RX 7700 XT' },
+        { value: 'rx7800xt', label: 'RX 7800 XT' },
+        { value: 'rx7900xt', label: 'RX 7900 XT' }
       ]
     },
     {
       id: 'ram',
-      title: 'Mémoire RAM',
+      title: '🧠 RAM',
       type: 'checkbox',
+      icon: '🧠',
       options: [
         { value: '8gb', label: '8 GB' },
-        { value: '16gb', label: '16 GB' },
-        { value: '32gb', label: '32 GB' },
+        { value: '16gb', label: '16 GB', popular: true },
+        { value: '32gb', label: '32 GB', popular: true },
         { value: '64gb', label: '64 GB' },
         { value: 'ddr4', label: 'DDR4' },
-        { value: 'ddr5', label: 'DDR5' }
+        { value: 'ddr5', label: 'DDR5', popular: true }
       ]
     },
     {
       id: 'stockage',
-      title: 'Stockage',
+      title: '💾 Stockage',
       type: 'checkbox',
+      icon: '💾',
       options: [
-        { value: 'ssd-256', label: 'SSD 256 GB' },
-        { value: 'ssd-512', label: 'SSD 512 GB' },
-        { value: 'ssd-1tb', label: 'SSD 1 TB' },
-        { value: 'ssd-2tb', label: 'SSD 2 TB' },
-        { value: 'hdd-1tb', label: 'HDD 1 TB' },
-        { value: 'hdd-2tb', label: 'HDD 2 TB' },
-        { value: 'nvme', label: 'NVMe M.2' }
+        { value: 'ssd-512', label: 'SSD 512GB', popular: true },
+        { value: 'ssd-1tb', label: 'SSD 1TB', popular: true },
+        { value: 'ssd-2tb', label: 'SSD 2TB' },
+        { value: 'nvme', label: 'NVMe M.2', popular: true },
+        { value: 'hdd-1tb', label: 'HDD 1TB' },
+        { value: 'hdd-2tb', label: 'HDD 2TB' }
       ]
     },
     {
       id: 'performance',
-      title: 'Niveau de Performance',
+      title: '🚀 Gaming',
       type: 'radio',
+      icon: '🚀',
       options: [
-        { value: 'entry', label: 'Entrée de gamme (1080p)' },
-        { value: 'mid', label: 'Milieu de gamme (1440p)' },
-        { value: 'high', label: 'Haut de gamme (4K)' },
-        { value: 'enthusiast', label: 'Enthusiast (4K Ultra)' }
+        { value: 'entry', label: '1080p Gaming', color: 'text-green-600' },
+        { value: 'mid', label: '1440p Gaming', color: 'text-blue-600' },
+        { value: 'high', label: '4K Gaming', color: 'text-purple-600' },
+        { value: 'enthusiast', label: '4K Ultra', color: 'text-red-600' }
       ]
     },
     {
       id: 'disponibilite',
-      title: 'Disponibilité',
+      title: '📦 Stock',
       type: 'radio',
+      icon: '📦',
       options: [
-        { value: 'stock', label: 'En stock' },
-        { value: 'preorder', label: 'Précommande' },
-        { value: 'coming', label: 'Bientôt disponible' }
+        { value: 'stock', label: '✅ En stock', color: 'text-green-600' },
+        { value: 'preorder', label: '⏳ Précommande', color: 'text-orange-600' },
+        { value: 'coming', label: '🔜 Bientôt', color: 'text-blue-600' }
       ]
     }
   ];
@@ -179,28 +192,27 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
     const isExpanded = expandedSections[section.id];
     
     return (
-      <div className="mb-6 border-b border-gray-200 dark:bg-[#1e1e1e] dark:border-gray-700 pb-4">
+      <div className="mb-3 border-b border-gray-100 dark:border-gray-800 pb-2">
         <button
           onClick={() => toggleSection(section.id)}
-          className="flex items-center justify-between w-full text-left font-semibold text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors mb-3"
+          className="flex items-center justify-between w-full text-left font-medium text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors mb-2 py-1"
         >
-          <span className="flex items-center">
-            <FiFilter className="mr-2" size={16} />
+          <span className="text-sm flex items-center">
             {section.title}
           </span>
           {isExpanded ? (
-            <FiChevronUp size={18} />
+            <FiChevronUp size={14} className="text-gray-400" />
           ) : (
-            <FiChevronDown size={18} />
+            <FiChevronDown size={14} className="text-gray-400" />
           )}
         </button>
         
         {isExpanded && (
-          <div className="space-y-2 pl-4">
+          <div className="space-y-1 pl-2">
             {section.options.map((option, index) => (
               <label
                 key={index}
-                className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 p-2 rounded-md transition-colors"
+                className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 px-2 py-1 rounded transition-colors group"
               >
                 <input
                   type={section.type}
@@ -218,10 +230,15 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
                       handleFilterChange(section.id, option.value, e.target.checked);
                     }
                   }}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  className="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-1 dark:bg-gray-700 dark:border-gray-600"
                 />
-                <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">
+                <span className={`text-xs flex-1 ${
+                  option.color || 'text-gray-700 dark:text-gray-300'
+                } ${option.popular ? 'font-medium' : ''}`}>
                   {option.label}
+                  {option.popular && (
+                    <span className="ml-1 text-xs bg-blue-100 text-blue-600 px-1 rounded">★</span>
+                  )}
                 </span>
               </label>
             ))}
@@ -235,65 +252,128 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
     Array.isArray(filter) ? filter.length > 0 : filter !== '' && filter !== false
   );
 
-  return (
-    <aside className="w-full md:w-1/4 p-4 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1e1e1e]">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 flex items-center">
-          <FiFilter className="mr-2" />
+  const activeFiltersCount = Object.values(filters).reduce((count, filter) => 
+    Array.isArray(filter) ? count + filter.length : 
+    (filter !== '' && filter !== false) ? count + 1 : count, 0
+  );
+
+  const FilterContent = () => (
+    <div className="h-full overflow-y-auto">
+      {/* Header compact */}
+      <div className="flex items-center justify-between mb-4 sticky top-0 bg-white dark:bg-[#1e1e1e] pb-2 border-b border-gray-200 dark:border-gray-700">
+        <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 flex items-center">
+          <FiFilter className="mr-2" size={16} />
           Filtres
+          {hasActiveFilters && (
+            <span className="ml-2 px-2 py-0.5 bg-blue-600 text-white text-xs rounded-full">
+              {activeFiltersCount}
+            </span>
+          )}
         </h3>
         {hasActiveFilters && (
           <button
             onClick={clearAllFilters}
-            className="flex items-center text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+            className="flex items-center text-xs text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded"
           >
-            <FiX className="mr-1" size={14} />
-            Tout effacer
+            <FiX className="mr-1" size={12} />
+            Reset
           </button>
         )}
       </div>
 
-      {/* Promotion spéciale */}
-      <div className="mb-6 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
-        <label className="flex items-center space-x-3 cursor-pointer">
+      {/* Promotion spéciale - version compacte */}
+      <div className="mb-4 p-3 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
+        <label className="flex items-center space-x-2 cursor-pointer">
           <input
             type="checkbox"
             checked={filters.promotion}
             onChange={() => handleFilterChange('promotion')}
-            className="w-4 h-4 text-yellow-600 bg-yellow-100 border-yellow-300 rounded focus:ring-yellow-500"
+            className="w-3 h-3 text-yellow-600 bg-yellow-100 border-yellow-300 rounded focus:ring-yellow-500"
           />
           <div>
-            <span className="text-sm font-semibold text-yellow-800 dark:text-yellow-200">
-              🔥 Promotions
+            <span className="text-xs font-semibold text-yellow-800 dark:text-yellow-200 flex items-center">
+              🔥 Promos exclusives
             </span>
-            <p className="text-xs text-yellow-700 dark:text-yellow-300">
-              Articles en promotion uniquement
+            <p className="text-xs text-yellow-700 dark:text-yellow-300 opacity-80">
+              Uniquement les offres spéciales
             </p>
           </div>
         </label>
       </div>
 
-      {/* Filter Sections */}
-      <div className="space-y-2">
+      {/* Filter Sections - version compacte */}
+      <div className="space-y-1">
         {filterSections.map((section) => (
           <FilterSection key={section.id} section={section} />
         ))}
       </div>
 
+      {/* Résumé des filtres actifs */}
       {hasActiveFilters && (
-        <div className="mt-6 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
-          <p className="text-sm text-blue-800 dark:text-blue-300">
-            <strong>
-              {Object.values(filters).reduce((count, filter) => 
-                Array.isArray(filter) ? count + filter.length : 
-                (filter !== '' && filter !== false) ? count + 1 : count, 0
-              )}
-            </strong> filtre(s) actif(s)
+        <div className="mt-4 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
+          <p className="text-xs text-blue-800 dark:text-blue-300 text-center">
+            🎯 <strong>{activeFiltersCount}</strong> critère(s) sélectionné(s)
           </p>
         </div>
       )}
-    </aside>
+
+      {/* Call-to-action pour mobile */}
+      <div className="md:hidden mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <button
+          onClick={toggleFilters}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm"
+        >
+          Voir les résultats
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Bouton mobile optimisé */}
+      <div className="md:hidden mb-4">
+        <button
+          onClick={toggleFilters}
+          className="w-full flex items-center justify-between p-3 bg-white dark:bg-[#1e1e1e] border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+        >
+          <span className="flex items-center text-gray-800 dark:text-gray-200 font-medium text-sm">
+            <FiFilter className="mr-2" size={16} />
+            Filtrer les PC Gaming
+            {hasActiveFilters && (
+              <span className="ml-2 px-2 py-1 bg-blue-600 text-white text-xs rounded-full">
+                {activeFiltersCount}
+              </span>
+            )}
+          </span>
+          {showFilters ? (
+            <FiChevronUp size={18} className="text-gray-600 dark:text-gray-400" />
+          ) : (
+            <FiChevronDown size={18} className="text-gray-600 dark:text-gray-400" />
+          )}
+        </button>
+      </div>
+
+      {/* Panel des filtres optimisé */}
+      <aside className={`
+        w-full md:w-1/4 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1e1e1e]
+        ${showFilters ? 'block' : 'hidden md:block'}
+        transition-all duration-300 ease-in-out
+        ${showFilters ? 'fixed md:relative inset-0 md:inset-auto z-50 md:z-auto' : 'relative'}
+      `}>
+        <div className="p-3 h-full">
+          <FilterContent />
+        </div>
+      </aside>
+
+      {/* Overlay pour mobile */}
+      {showFilters && (
+        <div 
+          className="md:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={toggleFilters}
+        />
+      )}
+    </>
   );
 };
 
