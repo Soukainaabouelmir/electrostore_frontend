@@ -14,7 +14,8 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
   });
 
   const [filters, setFilters] = useState({
-    prix: '',
+    prixMin: 0,
+    prixMax: 3000,
     marque: [],
     processeur: [],
     carteGraphique: [],
@@ -57,9 +58,16 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
     onFilterChange && onFilterChange(newFilters);
   };
 
+  const handlePriceRangeChange = (type, value) => {
+    const newFilters = { ...filters, [type]: parseInt(value) };
+    setFilters(newFilters);
+    onFilterChange && onFilterChange(newFilters);
+  };
+
   const clearAllFilters = () => {
     const clearedFilters = {
-      prix: '',
+      prixMin: 0,
+      prixMax: 3000,
       marque: [],
       processeur: [],
       carteGraphique: [],
@@ -73,26 +81,107 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
     onClearFilters && onClearFilters();
   };
 
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('fr-FR', { 
+      style: 'currency', 
+      currency: 'EUR',
+      maximumFractionDigits: 0
+    }).format(price);
+  };
+
   const filterSections = [
     {
       id: 'prix',
       title: '💰 Budget',
-      type: 'radio',
-      icon: '💰',
-      options: [
-        { value: '0-500', label: '< 500€', color: 'text-green-600' },
-        { value: '500-800', label: '500€ - 800€', color: 'text-blue-600' },
-        { value: '800-1200', label: '800€ - 1200€', color: 'text-purple-600' },
-        { value: '1200-1800', label: '1200€ - 1800€', color: 'text-orange-600' },
-        { value: '1800-2500', label: '1800€ - 2500€', color: 'text-red-600' },
-        { value: '2500+', label: '> 2500€', color: 'text-red-800' }
-      ]
+      type: 'priceRange',
+      component: () => (
+        <div className="space-y-4 px-2">
+          {/* Affichage des valeurs actuelles */}
+          <div className="flex justify-between items-center">
+            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+              {formatPrice(filters.prixMin)}
+            </span>
+            <span className="text-xs text-gray-500 dark:text-gray-500">à</span>
+            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+              {formatPrice(filters.prixMax)}
+            </span>
+          </div>
+
+          {/* Slider pour prix minimum */}
+          <div className="space-y-2">
+            <label className="text-xs text-gray-600 dark:text-gray-400 block">Prix minimum</label>
+            <input
+              type="range"
+              min="0"
+              max="2800"
+              step="100"
+              value={filters.prixMin}
+              onChange={(e) => handlePriceRangeChange('prixMin', e.target.value)}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-thumb-blue"
+              style={{
+                background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${(filters.prixMin / 2800) * 100}%, #e5e7eb ${(filters.prixMin / 2800) * 100}%, #e5e7eb 100%)`
+              }}
+            />
+            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-500">
+              <span>0€</span>
+              <span>2800€</span>
+            </div>
+          </div>
+
+          {/* Slider pour prix maximum */}
+          <div className="space-y-2">
+            <label className="text-xs text-gray-600 dark:text-gray-400 block">Prix maximum</label>
+            <input
+              type="range"
+              min="200"
+              max="3000"
+              step="100"
+              value={filters.prixMax}
+              onChange={(e) => handlePriceRangeChange('prixMax', e.target.value)}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider-thumb-blue"
+              style={{
+                background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((filters.prixMax - 200) / 2800) * 100}%, #e5e7eb ${((filters.prixMax - 200) / 2800) * 100}%, #e5e7eb 100%)`
+              }}
+            />
+            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-500">
+              <span>200€</span>
+              <span>3000€+</span>
+            </div>
+          </div>
+
+          {/* Presets rapides */}
+          <div className="grid grid-cols-2 gap-2 mt-3">
+            {[
+              { min: 0, max: 500, label: '< 500€', color: 'bg-green-100 text-green-800 border-green-200' },
+              { min: 500, max: 800, label: '500-800€', color: 'bg-blue-100 text-blue-800 border-blue-200' },
+              { min: 800, max: 1200, label: '800-1200€', color: 'bg-purple-100 text-purple-800 border-purple-200' },
+              { min: 1200, max: 1800, label: '1200-1800€', color: 'bg-orange-100 text-orange-800 border-orange-200' },
+              { min: 1800, max: 2500, label: '1800-2500€', color: 'bg-red-100 text-red-800 border-red-200' },
+              { min: 2500, max: 3000, label: '> 2500€', color: 'bg-red-200 text-red-900 border-red-300' }
+            ].map((preset, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  handlePriceRangeChange('prixMin', preset.min);
+                  handlePriceRangeChange('prixMax', preset.max);
+                }}
+                className={`text-xs px-2 py-1 rounded border transition-all hover:shadow-sm ${preset.color} ${
+                  filters.prixMin === preset.min && filters.prixMax === preset.max 
+                    ? 'ring-2 ring-blue-500' 
+                    : ''
+                }`}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )
     },
     {
       id: 'marque',
-      title: '🏷️ Marque',
+      title: '🏭 Marque',
       type: 'checkbox',
-      icon: '🏷️',
       options: [
         { value: 'asus', label: 'ASUS', popular: true },
         { value: 'msi', label: 'MSI', popular: true },
@@ -107,7 +196,6 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
       id: 'processeur',
       title: '⚡ Processeur',
       type: 'checkbox',
-      icon: '⚡',
       options: [
         { value: 'intel-i5', label: 'Intel i5', popular: true },
         { value: 'intel-i7', label: 'Intel i7', popular: true },
@@ -121,7 +209,6 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
       id: 'carteGraphique',
       title: '🎮 GPU',
       type: 'checkbox',
-      icon: '🎮',
       options: [
         { value: 'rtx4060', label: 'RTX 4060', popular: true },
         { value: 'rtx4060ti', label: 'RTX 4060 Ti' },
@@ -139,7 +226,6 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
       id: 'ram',
       title: '🧠 RAM',
       type: 'checkbox',
-      icon: '🧠',
       options: [
         { value: '8gb', label: '8 GB' },
         { value: '16gb', label: '16 GB', popular: true },
@@ -153,7 +239,6 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
       id: 'stockage',
       title: '💾 Stockage',
       type: 'checkbox',
-      icon: '💾',
       options: [
         { value: 'ssd-512', label: 'SSD 512GB', popular: true },
         { value: 'ssd-1tb', label: 'SSD 1TB', popular: true },
@@ -165,9 +250,8 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
     },
     {
       id: 'performance',
-      title: '🚀 Gaming',
+      title: '🎯 Gaming',
       type: 'radio',
-      icon: '🚀',
       options: [
         { value: 'entry', label: '1080p Gaming', color: 'text-green-600' },
         { value: 'mid', label: '1440p Gaming', color: 'text-blue-600' },
@@ -179,7 +263,6 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
       id: 'disponibilite',
       title: '📦 Stock',
       type: 'radio',
-      icon: '📦',
       options: [
         { value: 'stock', label: '✅ En stock', color: 'text-green-600' },
         { value: 'preorder', label: '⏳ Précommande', color: 'text-orange-600' },
@@ -209,39 +292,43 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
         
         {isExpanded && (
           <div className="space-y-1 pl-2">
-            {section.options.map((option, index) => (
-              <label
-                key={index}
-                className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 px-2 py-1 rounded transition-colors group"
-              >
-                <input
-                  type={section.type}
-                  name={section.id}
-                  value={option.value}
-                  checked={
-                    section.type === 'radio' 
-                      ? filters[section.id] === option.value
-                      : filters[section.id].includes(option.value)
-                  }
-                  onChange={(e) => {
-                    if (section.type === 'radio') {
-                      handleFilterChange(section.id, option.value);
-                    } else {
-                      handleFilterChange(section.id, option.value, e.target.checked);
+            {section.type === 'priceRange' ? (
+              section.component()
+            ) : (
+              section.options.map((option, index) => (
+                <label
+                  key={index}
+                  className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 px-2 py-1 rounded transition-colors group"
+                >
+                  <input
+                    type={section.type}
+                    name={section.id}
+                    value={option.value}
+                    checked={
+                      section.type === 'radio' 
+                        ? filters[section.id] === option.value
+                        : filters[section.id].includes(option.value)
                     }
-                  }}
-                  className="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-1 dark:bg-gray-700 dark:border-gray-600"
-                />
-                <span className={`text-xs flex-1 ${
-                  option.color || 'text-gray-700 dark:text-gray-300'
-                } ${option.popular ? 'font-medium' : ''}`}>
-                  {option.label}
-                  {option.popular && (
-                    <span className="ml-1 text-xs bg-blue-100 text-blue-600 px-1 rounded">★</span>
-                  )}
-                </span>
-              </label>
-            ))}
+                    onChange={(e) => {
+                      if (section.type === 'radio') {
+                        handleFilterChange(section.id, option.value);
+                      } else {
+                        handleFilterChange(section.id, option.value, e.target.checked);
+                      }
+                    }}
+                    className="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-1 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <span className={`text-xs flex-1 ${
+                    option.color || 'text-gray-700 dark:text-gray-300'
+                  } ${option.popular ? 'font-medium' : ''}`}>
+                    {option.label}
+                    {option.popular && (
+                      <span className="ml-1 text-xs bg-blue-100 text-blue-600 px-1 rounded">★</span>
+                    )}
+                  </span>
+                </label>
+              ))
+            )}
           </div>
         )}
       </div>
@@ -250,15 +337,38 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
 
   const hasActiveFilters = Object.values(filters).some(filter => 
     Array.isArray(filter) ? filter.length > 0 : filter !== '' && filter !== false
-  );
+  ) || filters.prixMin !== 0 || filters.prixMax !== 3000;
 
   const activeFiltersCount = Object.values(filters).reduce((count, filter) => 
     Array.isArray(filter) ? count + filter.length : 
     (filter !== '' && filter !== false) ? count + 1 : count, 0
-  );
+  ) + (filters.prixMin !== 0 || filters.prixMax !== 3000 ? 1 : 0);
 
   const FilterContent = () => (
     <div className="h-full overflow-y-auto">
+      <style jsx>{`
+        .slider-thumb-blue::-webkit-slider-thumb {
+          appearance: none;
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: #3b82f6;
+          cursor: pointer;
+          border: 2px solid white;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .slider-thumb-blue::-moz-range-thumb {
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: #3b82f6;
+          cursor: pointer;
+          border: 2px solid white;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+      `}</style>
+
       {/* Header compact */}
       <div className="flex items-center justify-between mb-4 sticky top-0 bg-white dark:bg-[#1e1e1e] pb-2 border-b border-gray-200 dark:border-gray-700">
         <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 flex items-center">
@@ -314,6 +424,11 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
           <p className="text-xs text-blue-800 dark:text-blue-300 text-center">
             🎯 <strong>{activeFiltersCount}</strong> critère(s) sélectionné(s)
           </p>
+          {(filters.prixMin !== 0 || filters.prixMax !== 3000) && (
+            <p className="text-xs text-blue-700 dark:text-blue-300 text-center mt-1">
+              Budget: {formatPrice(filters.prixMin)} - {formatPrice(filters.prixMax)}
+            </p>
+          )}
         </div>
       )}
 

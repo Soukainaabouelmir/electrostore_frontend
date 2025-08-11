@@ -4,7 +4,6 @@ import PcGamerCard from './PcGamerCard';
 const PcGamerList = ({ products = [], onProductSelect }) => {
   
   const handleViewDetails = (product) => {
-    // Vérification et gestion d'erreur
     if (!onProductSelect) {
       console.error('onProductSelect prop is missing in PcGamerList');
       return;
@@ -18,7 +17,6 @@ const PcGamerList = ({ products = [], onProductSelect }) => {
     onProductSelect(product);
   };
 
-  // Vérification des produits
   if (!products || products.length === 0) {
     return (
       <div className="text-center py-8">
@@ -26,7 +24,7 @@ const PcGamerList = ({ products = [], onProductSelect }) => {
       </div>
     );
   }
-
+  
   return (
     <div className="grid grid-cols-2 md:grid-cols-2 px-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
       {products.map(product => (
@@ -39,5 +37,6 @@ const PcGamerList = ({ products = [], onProductSelect }) => {
     </div>
   );
 };
+
 
 export default PcGamerList;

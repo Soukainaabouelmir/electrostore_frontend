@@ -30,7 +30,7 @@ const CartSidebar = ({ isOpen, onClose }) => {
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-[#1e1e1e] dark:to-gray-900">
           <div className="flex items-center space-x-2 sm:space-x-3">
             <div className="relative">
               <FiShoppingCart className="text-lg sm:text-xl text-blue-600 dark:text-blue-400" />
@@ -69,7 +69,7 @@ const CartSidebar = ({ isOpen, onClose }) => {
               </span>
             </div>
             <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-              <div 
+              <div
                 className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${Math.min((totalPrice / freeShippingThreshold) * 100, 100)}%` }}
               />
@@ -99,7 +99,7 @@ const CartSidebar = ({ isOpen, onClose }) => {
             </div>
           ) : (
             cartItems.map(item => (
-              <div key={item.id} className="flex items-start space-x-3 sm:space-x-3 p-2 sm:p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
+              <div key={item.id} className="flex items-start space-x-3 sm:space-x-3 p-2 sm:p-4 bg-white dark:bg-[#1e1e1e] rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
                 <div className="relative flex-shrink-0">
                   <img
                     src={item.image}

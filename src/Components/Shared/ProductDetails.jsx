@@ -94,8 +94,8 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
         shipping: "Livraison gratuite sous 24-48h",
         returnPolicy: "Retour gratuit sous 30 jours"
       });
-      setLoading(false);
-    }, 1000);
+    
+    });
   }, [productId]);
 
   const getProductIcon = (category) => {
@@ -125,16 +125,6 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
   const discountPercent = product?.original_price ? 
     Math.round(((product.original_price - product.price) / product.original_price) * 100) : 0;
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-white dark:bg-[#141414] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Chargement du produit...</p>
-        </div>
-      </div>
-    );
-  }
 
   if (!product) {
     return (
