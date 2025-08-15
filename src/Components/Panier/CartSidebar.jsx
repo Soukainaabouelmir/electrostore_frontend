@@ -29,7 +29,7 @@ const CartSidebar = ({ isOpen, onClose }) => {
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        {/* Header */}
+       
         <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-[#1e1e1e] dark:to-gray-900">
           <div className="flex items-center space-x-2 sm:space-x-3">
             <div className="relative">
@@ -55,9 +55,7 @@ const CartSidebar = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-       
 
-        {/* Free Shipping Progress */}
         {!isEligibleForFreeShipping && totalPrice > 0 && (
           <div className="p-3 sm:p-4 bg-blue-50 dark:bg-blue-900/20 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between mb-2">
@@ -77,7 +75,7 @@ const CartSidebar = ({ isOpen, onClose }) => {
           </div>
         )}
 
-        {/* Cart Items */}
+     
         <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4" style={{ maxHeight: cartItems.length > 0 ? 'calc(100vh - 340px)' : 'calc(100vh - 260px)' }}>
           {cartItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-48 sm:h-64 text-center px-4">
@@ -118,7 +116,6 @@ const CartSidebar = ({ isOpen, onClose }) => {
                     {item.name}
                   </h3>
                   
-                  {/* Features */}
                   {item.features && (
                     <div className="flex flex-wrap gap-1 mb-2">
                       {item.features.slice(0, 2).map((feature, index) => (
@@ -128,7 +125,6 @@ const CartSidebar = ({ isOpen, onClose }) => {
                       ))}
                     </div>
                   )}
-                  
                   {/* Price */}
                   <div className="flex items-center space-x-2 mb-2 sm:mb-3">
                     <span className="text-base sm:text-lg font-bold text-green-600 dark:text-green-400">
@@ -141,7 +137,7 @@ const CartSidebar = ({ isOpen, onClose }) => {
                     )}
                   </div>
                   
-                  {/* Quantity Controls */}
+                  
                   <div className="flex items-center justify-between">
                     <div className="flex items-center bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                       <button
@@ -174,10 +170,10 @@ const CartSidebar = ({ isOpen, onClose }) => {
           )}
         </div>
 
-        {/* Footer */}
+        
         {cartItems.length > 0 && (
   <div className="border-t border-gray-200 dark:border-gray-700 p-1 sm:p-2 bg-white dark:bg-[#141414] mt-auto flex-shrink-0 text-sm min-h-[72px] ">
-    {/* Price Summary */}
+    
     <div className="space-y-1 mb-2 sm:mb-3">
       <div className="">
         <div className="flex justify-between items-center">

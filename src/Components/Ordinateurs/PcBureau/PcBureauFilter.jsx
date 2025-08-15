@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FiChevronDown, FiChevronUp, FiFilter, FiX } from "react-icons/fi";
 
-const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
+const PcBureauFilter = ({ onFilterChange, onClearFilters }) => {
   const [expandedSections, setExpandedSections] = useState({
     prix: true,
     marque: true,
@@ -149,7 +149,6 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
             </div>
           </div>
 
-          {/* Presets rapides */}
           <div className="grid grid-cols-2 gap-2 mt-3">
             {[
               { min: 0, max: 500, label: '< 500€', color: 'bg-green-100 text-green-800 border-green-200' },
@@ -467,4 +466,4 @@ const PcGamerFilter = ({ onFilterChange, onClearFilters }) => {
   );
 };
 
-export default PcGamerFilter;
+export default PcBureauFilter;
