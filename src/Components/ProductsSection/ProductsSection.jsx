@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { FiSmartphone, FiHeadphones, FiMonitor, FiWatch, FiTablet, FiAnchor, FiCamera, FiSpeaker, FiCpu, FiWifi, FiHardDrive, FiTv } from 'react-icons/fi';
+import { FiSmartphone, FiHeadphones, FiMonitor, FiWatch} from 'react-icons/fi';
 import { useCart } from '../Panier/CartContext ';
 
 const ProductsSection = ({ onViewDetails }) => {
   const [showMore, setShowMore] = useState(false);
   const { addToCart } = useCart();
 
-  // Données d'exemple pour tous les produits
   const allProducts = [
+
     {
       id: 1,
       name: "iPhone 15 Pro Max",
@@ -19,6 +19,7 @@ const ProductsSection = ({ onViewDetails }) => {
       icon: FiSmartphone,
       features: ["A17 Pro", "256GB", "Titane"]
     },
+
     {
       id: 2,
       name: "AirPods Pro 2ème génération",
@@ -52,6 +53,7 @@ const ProductsSection = ({ onViewDetails }) => {
       icon: FiWatch,
       features: ["GPS + Cellular", "45mm", "Double tap"]
     },
+
     {
       id: 5,
       name: "iPhone 15 Pro Max",
@@ -111,6 +113,7 @@ const ProductsSection = ({ onViewDetails }) => {
         button.style.background = 'linear-gradient(to right, #2563eb, #9333ea)';
       }, 1500);
     }
+
   };
 
   const handleViewDetails = (product) => {
@@ -171,12 +174,9 @@ const ProductsSection = ({ onViewDetails }) => {
         </div>
 
         <div className="p-3 sm:p-4 flex flex-col flex-grow">
-          {/* Nom du produit */}
           <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
             {product.name}
           </h3>
-
-          {/* Caractéristiques */}
           <div className="flex flex-wrap gap-1 mb-2 sm:mb-3">
             {product.features.slice(0, 2).map((feature, index) => (
               <span key={index} className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
@@ -189,8 +189,7 @@ const ProductsSection = ({ onViewDetails }) => {
               </span>
             )}
           </div>
-
-          {/* Rating */}
+      
           <div className="flex items-center mb-2 sm:mb-3">
             <span className="text-xs text-gray-600 dark:text-gray-400">
               Produit de qualité premium
@@ -211,7 +210,6 @@ const ProductsSection = ({ onViewDetails }) => {
             </span>
           </div>
 
-          {/* Bouton d'achat */}
           <button 
             id={`add-btn-${product.id}`}
             onClick={() => handleAddToCart(product)}
@@ -223,6 +221,7 @@ const ProductsSection = ({ onViewDetails }) => {
       </div>
     );
   };
+
 
   return (
     <section className="py-8 sm:py-12 px-4 bg-white dark:!bg-[#141414]">
@@ -237,14 +236,12 @@ const ProductsSection = ({ onViewDetails }) => {
           <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto mt-4 sm:mt-6 rounded-full"></div>
         </div>
 
-        {/* Grille de produits responsive */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
           {displayedProducts.map(product => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
 
-        {/* Bouton Voir plus / Voir moins */}
         <div className="text-center">
           <button 
             onClick={() => setShowMore(!showMore)}
@@ -254,7 +251,6 @@ const ProductsSection = ({ onViewDetails }) => {
           </button>
         </div>
 
-        {/* Section statistiques */}
         <div className="mt-12 sm:mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           <div className="text-center p-4 sm:p-6 bg-gray-50 dark:bg-[#1e1e1e] rounded-xl">
             <div className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">

@@ -1,18 +1,53 @@
 import React, { useState, useEffect } from "react";
 import { FiSearch, FiShoppingCart, FiSun, FiMoon, FiUser } from "react-icons/fi";
-
+import { useNavigate } from "react-router-dom";
 
 import CartSidebar from "../Panier/CartSidebar";
 import { useCart } from "../Panier/CartContext ";
 
 const MainHeader = () => {
-  // État initial basé sur une valeur par défaut (pas localStorage)
-  const [darkMode, setDarkMode] = useState(false);
+  const navigate =useNavigate();
+  // Fonction pour récupérer la préférence de thème depuis les cookies
+  const getInitialTheme = () => {
+    try {
+      // Essaie de récupérer depuis les cookies
+      const cookies = document.cookie.split(';');
+      const themeCookie = cookies.find(cookie => cookie.trim().startsWith('darkMode='));
+      if (themeCookie) {
+        return themeCookie.split('=')[1] === 'true';
+      }
+      
+      // Si pas de cookie, utilise la préférence système
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    } catch (error) {
+      // Fallback en cas d'erreur
+      return false;
+    }
+  };
+
+  const goToCompte = () => {
+    navigate('/compte');
+  }
+
+  // État initial basé sur la préférence sauvegardée ou système
+  const [darkMode, setDarkMode] = useState(getInitialTheme);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { getTotalItems } = useCart();
 
-  // Effet pour appliquer les classes de thème
+  // Fonction pour sauvegarder la préférence dans les cookies
+  const saveDarkModePreference = (isDark) => {
+    try {
+      // Sauvegarde dans les cookies avec une expiration de 365 jours
+      const expirationDate = new Date();
+      expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+      document.cookie = `darkMode=${isDark}; expires=${expirationDate.toUTCString()}; path=/`;
+    } catch (error) {
+      console.log('Impossible de sauvegarder la préférence de thème');
+    }
+  };
+
+  // Effet pour appliquer les classes de thème et sauvegarder la préférence
   useEffect(() => {
     // Applique le thème au document
     if (darkMode) {
@@ -20,7 +55,31 @@ const MainHeader = () => {
     } else {
       document.documentElement.classList.remove('dark');
     }
+    
+    // Sauvegarde la préférence
+    saveDarkModePreference(darkMode);
   }, [darkMode]);
+
+  // Effet pour écouter les changements de préférence système
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e) => {
+      // Ne change que si aucune préférence utilisateur n'est déjà définie
+      const cookies = document.cookie.split(';');
+      const hasUserPreference = cookies.some(cookie => cookie.trim().startsWith('darkMode='));
+      
+      if (!hasUserPreference) {
+        setDarkMode(e.matches);
+      }
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
 
   return (
     <>
@@ -34,6 +93,7 @@ const MainHeader = () => {
               <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-900 to-orange-500 transition-all duration-300 group-hover:w-full"></div>
             </div>
           </div>
+          
           {/* Barre de recherche */}
           <div className="relative flex-1 max-w-2xl w-full lg:mx-8">
             <div className={`relative transition-all duration-300 ${isSearchFocused ? 'scale-105' : ''}`}>
@@ -49,13 +109,15 @@ const MainHeader = () => {
               </button>
             </div>
           </div>
+          
           {/* Actions */}
           <div className="flex items-center space-x-4">
             {/* Bouton Dark/Light Mode */}
             <button 
-              onClick={() => setDarkMode(!darkMode)}
+              onClick={toggleDarkMode}
               className="p-3 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 transform hover:scale-110 shadow-sm"
               aria-label={darkMode ? "Passer en mode clair" : "Passer en mode sombre"}
+              title={darkMode ? "Mode clair" : "Mode sombre"}
             >
               {darkMode ? (
                 <FiSun className="text-xl text-yellow-500" />
@@ -63,21 +125,24 @@ const MainHeader = () => {
                 <FiMoon className="text-xl text-gray-700" />
               )}
             </button>
-            {/* auth*/  }
-             <button 
-              onClick={() => setDarkMode(!darkMode)}
-              className="p-3 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 transform hover:scale-110 shadow-sm"
             
+            {/* Authentification */}
+            <button 
+              className="p-3 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 transform hover:scale-110 shadow-sm"
+              aria-label="Compte utilisateur"
+              title="Mon compte"
+              onClick={goToCompte}
             >
-             
-                <FiUser className="text-xl text-gray-500 dark:text-orange-300" />
-          
-             
+              <FiUser className="text-xl text-gray-700 dark:text-orange-300" />
             </button>
+            
             {/* Panier */}
             <button 
               onClick={() => setIsCartOpen(true)}
-              className="relative p-3 rounded-full bg-orange-100 dark:bg-orange-900 hover:bg-orange-200 dark:hover:bg-orange-800 transition-all duration-300 transform hover:scale-110 shadow-sm group">
+              className="relative p-3 rounded-full bg-orange-100 dark:bg-orange-900 hover:bg-orange-200 dark:hover:bg-orange-800 transition-all duration-300 transform hover:scale-110 shadow-sm group"
+              aria-label={`Panier (${getTotalItems()} articles)`}
+              title="Mon panier"
+            >
               <FiShoppingCart className="text-xl text-orange-600 dark:text-orange-400 group-hover:animate-bounce" />
               {getTotalItems() > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold animate-pulse">

@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import UniversalPcFilter from '../../Shared/UniversalPcFilter';
-import PcGamerList from './PcGamerList';
 import ProductDetails from '../../Shared/ProductDetails';
+import UniversalPcFilter from '../../Shared/UniversalPcFilter';
+import PcPortableList from './PcPortableList';
 
-const PcGamerPage = () => {
+const PcPortablePage = () => {
   // État pour gérer le produit sélectionné
   const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -313,7 +313,7 @@ const PcGamerPage = () => {
             />
             <div className="flex-1">
               {filteredProducts.length > 0 ? (
-                <PcGamerList 
+                <PcPortableList 
                   products={filteredProducts} 
                   onProductSelect={handleProductSelect}
                 />
@@ -348,4 +348,4 @@ const PcGamerPage = () => {
   );
 };
 
-export default PcGamerPage;
+export default PcPortablePage;

@@ -275,24 +275,27 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
             </div>
             <div className="space-y-4">
               <div className="flex items-center space-x-4">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <span className="text-sm font-medium text-gray-700 dark:!text-gray-300">
                   Quantité:
                 </span>
                 <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    className="p-2 transition-colors"
                   >
-                    <FiMinus size={16} />
+                    <FiMinus size={16}
+                    className='text-gray-700 dark:!text-gray-300' />
                   </button>
-                  <span className="px-4 py-2 text-center min-w-[60px]">
+                  <span className="px-4 text-gray-700 dark:!text-gray-300 py-2 text-center min-w-[60px]">
                     {quantity}
                   </span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    className="p-2 transition-colors"
                   >
-                    <FiPlus size={16} />
+                    <FiPlus
+                    className='text-gray-700 dark:!text-gray-300'
+                     size={16} />
                   </button>
                 </div>
               </div>

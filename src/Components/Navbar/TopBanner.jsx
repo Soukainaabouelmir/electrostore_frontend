@@ -1,19 +1,9 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { 
   FiPhone, 
-  FiSearch, 
-  FiShoppingCart, 
-  FiSun, 
-  FiMoon, 
-  FiMenu, 
   FiX,
-  FiChevronDown,
-  FiMonitor,
-  FiCpu,
-  FiMouse,
-  FiTool,
-  FiHeadphones
+
 } from "react-icons/fi";
 
 const TopBanner = () => {

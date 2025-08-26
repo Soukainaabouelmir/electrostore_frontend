@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import PcBureauFilter from './PcBureauFilter';
+import UniversalPcFilter from '../../Shared/UniversalPcFilter';
 import PcBureauList from './PcBureauList';
 import ProductDetails from '../../Shared/ProductDetails';
 
@@ -20,42 +20,12 @@ const PcBureauPage = () => {
   });
 
   const allProducts = [
+   
+  
     { 
-      id: 1, 
-      name: "PC Gamer RTX 4070 - ASUS ROG", 
-      price: 1299, 
-      original_price: 1499,
-      image_url: "https://images.unsplash.com/photo-1587831990711-23ca6441447b?w=400&h=400&fit=crop",
-      marque: "asus",
-      processeur: "intel-i7",
-      carteGraphique: "rtx4070",
-      ram: "16gb",
-      stockage: "ssd-1tb",
-      performance: "high",
-      disponibilite: "stock",
-      features: ["RTX 4070", "Intel i7", "16GB DDR4"],
-      promotion: true
-    },
-    { 
-      id: 2, 
-      name: "PC Gaming MSI Aegis RS 13", 
-      price: 1599, 
-      original_price: 1799,
-      image_url: "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=400&h=400&fit=crop",
-      marque: "msi",
-      processeur: "intel-i9",
-      carteGraphique: "rtx4080",
-      ram: "32gb",
-      stockage: "ssd-2tb",
-      performance: "enthusiast",
-      disponibilite: "stock",
-      features: ["RTX 4080", "Intel i9", "32GB DDR5"],
-      promotion: true
-    },
-    { 
-      id: 3, 
-      name: "Alienware Aurora R15", 
-      price: 2299, 
+      id: 5, 
+      name: "Alienware HELLO  R15", 
+      price: 2252699, 
       image_url: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=400&fit=crop",
       marque: "alienware",
       processeur: "intel-i9",
@@ -66,22 +36,6 @@ const PcBureauPage = () => {
       disponibilite: "stock",
       features: ["RTX 4090", "Intel i9", "32GB DDR5"],
       promotion: false
-    },
-    { 
-      id: 4, 
-      name: "HP Omen 45L Gaming Desktop", 
-      price: 899, 
-      original_price: 1099,
-      image_url: "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=400&h=400&fit=crop",
-      marque: "hp",
-      processeur: "amd-ryzen7",
-      carteGraphique: "rtx4060ti",
-      ram: "16gb",
-      stockage: "ssd-512",
-      performance: "mid",
-      disponibilite: "stock",
-      features: ["RTX 4060 Ti", "Ryzen 7", "16GB DDR4"],
-      promotion: true
     }
   ];
 
@@ -227,7 +181,7 @@ const PcBureauPage = () => {
         
         {!selectedProduct ? (
           <div className="flex flex-col md:flex-row gap-1">
-            <PcBureauFilter 
+            <UniversalPcFilter 
               onFilterChange={handleFilterChange} 
               onClearFilters={handleClearFilters} 
             />
@@ -257,7 +211,7 @@ const PcBureauPage = () => {
             </div>
           </div>
         ) : (
-          // Afficher les détails du produit en plein écran
+  
           <ProductDetails 
             productId={selectedProduct.id} 
             onClose={handleBackToList}
