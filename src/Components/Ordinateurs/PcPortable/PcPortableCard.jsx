@@ -150,7 +150,9 @@ const PcPortableCard = ({ product,onViewDetails  }) => {
               <span className="text-xs sm:text-sm text-gray-500 line-through">
                 {product.original_price} MAD
               </span>
+               
             )}
+          
           </div>
           {product.original_price && product.original_price > product.price && (
             <span className="text-xs text-green-600 dark:text-green-400 font-medium">

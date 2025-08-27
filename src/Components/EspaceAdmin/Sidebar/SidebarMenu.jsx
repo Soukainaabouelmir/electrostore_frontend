@@ -23,50 +23,39 @@ const SidebarMenu = ({ isCollapsed, activeDropdown, toggleDropdown }) => {
 
   // Configuration des éléments du menu avec traductions
   const menuItems = [ 
-    {
-      title: t("administration"),
-      isSection: true
-    },
+    // {
+     
+    //   isSection: true
+    // },
     {
       title: t("dashboard"),
       icon: <FiHome />,
       path: "/dashboard/admin"
     },
     {
-      title: t("admin"),
-      path: "/Company/structure",
+      title: t("Produits"),
+      path: "/admin/produits",
       icon: <FiLayers />,
       submenu: [
-        { title: t("companyStructure"), path: "/Company/structure" },
-        { title: t("jobDetailsSetup"), path: "/job/details" },
-        { title: t("qualificationsSetup"), path: "/qualifications/setup" },
-        { title: t("resourcePerProject"), path: "/ressources/per/project" },
-        { title: t("clients"), path: "/clients" },
+        { title: "Liste des produits", path: "/admin/produits" },
     
       ]
     },
     {
-      title: t("employeesSection"),
-      isSection: true,
-    },
-    {
-      title: t("employees"),
-      path: "/employees" ,
+      title: "Commandes",
+      path: "/admin/commandes" ,
       icon: <FiUsers />,
       submenu: [
-        { title: t("employees"), path: "/employees" },
+        { title: "Liste des commandes", path: "/admin/commandes" },
       ]
     },
     {
-      title: t("manage"),
-      path: "/documents",
-      icon: <FiList />,
+      title: t("Clients"),
+      path: "/admin/client",
+      icon: <FiUsers />,
       submenu: [
-        { title: t("documents"), path: "/documents" },
-        { title: t("attendance"), path: "/attendance" },
-        { title: t("overtime"), path: "/overtime" },
-        { title: t("vacation"), path: "/vacation" },
-        { title: t("loans"), path: "/loans"}
+        { title:"Liste des clients", path: "/admin/client" },
+       
       ]
     },
    
@@ -76,63 +65,14 @@ const SidebarMenu = ({ isCollapsed, activeDropdown, toggleDropdown }) => {
       icon: <FiSettings />,
       submenu: [
         { title: t("settings"), path: "/settings" },
-        { title: t("users"), path: "/users" },
+        
        
       ]
     },
-   {
-  title: t("payroll"),
-  icon: <FiDollarSign />,
-  submenu: [
-    { title: t("rate_and_tax"), path: "/taux-taxe" },
-    { title: t("salary"), path: "/salaire" },
-    { title: t("bonuses"), path: "/payroll/" },
-  
-    // { title: t("allowances"), path: "/payroll/allowances" },
-    { title: t("reimbursements"), path: "/notes-de-frais" },
-    { title: t("payslips"), path: "/payroll" },
-  
-  ]
-},
+   
 
-    {
-      title: t("personalInformation"),
-      icon: <FiUserCheck />,
-      submenu: [
-        { title: t("personalDashboard"), path: "/dashboard" },
-        { title: t("profile"), path: "/profile" },
-        { title: t("personalDocuments"), path: "/documents/informations" },
-        { title: t("personalVacation"), path: "/vacation/informations"},
-        {title:t("overtime"),path:"/overtime/personal"},
-        {title:t("attendance"),path:"/attendance/personal"},
-        {title:t("trainings"), path:"/training/personal"},
-        { title: t("payslips"), path: "/payroll/payslips" },
-      ]
-    },
-    //  {
-    //   title: t("myproject"),
-    //   path: "/mes-projets",
-    //   icon: <FiFolder />,
-    //   submenu: [
-    //     { title: t("mesprojets"), path: "/mes-projets" },
-    //   ]
-    // },
-    // {
-    //   title: t("projectmanagement"),
-    //   path: "/project/management",
-    //   icon: <FiFolder />,
-    //   submenu: [
-    //     { title: t("mesprojets"), path: "/mes-projets" },
-    //   ]
-    // },
-    {
-      title: t("training"),
-      path: "/training",
-      icon: <FiBookOpen />,
-      submenu: [
-        { title: t("trainings"), path: "/training" },
-      ]
-    },
+   
+ 
     
   ];
 

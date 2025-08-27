@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Mail, Lock, ShoppingBag } from "lucide-react";
-
+import {Link} from 'react-router-dom';
+ 
 const LoginForm = ({ onSubmit = (data) => console.log(data) }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -104,9 +105,9 @@ const LoginForm = ({ onSubmit = (data) => console.log(data) }) => {
 
           <p className="text-center dark:text-gray-400 text-gray-600 text-sm mt-6">
             Pas encore de compte ?{" "}
-            <a href="#" className="text-blue-600 hover:text-blue-500 font-medium">
+           <Link to="/signup" className="text-blue-600 hover:text-blue-500 font-medium">
               Créer un compte
-            </a>
+            </Link>
           </p>
         </div>
       </div>

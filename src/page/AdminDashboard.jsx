@@ -12,7 +12,7 @@ const AdminDashboard = () => {
     }
   }, [navigate, role, token]);
 
-  return <div>Bienvenue sur le tableau de bord Admin !</div>;
+  return <div className="p-6">Bienvenue sur le tableau de bord Admin !</div>;
 };
 
 export default AdminDashboard;

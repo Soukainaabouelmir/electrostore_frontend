@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import ThemeToggle from './ThemeToggle';
-import LanguageDropdown from './LanguageDropdown';
 import UserMenu from './UserMenu';
-import NotificationDropdown from './NotificationDropdown';
 
-const Navbar = ({ isDarkMode, toggleDarkMode, isMobile, toggleMobileSidebar }) => {
+
+const AdminNavbar = ({ isDarkMode, toggleDarkMode, isMobile, toggleMobileSidebar }) => {
   const [selectedLanguage, setSelectedLanguage] = useState('EN');
   const [notifications] = useState(3);
 
@@ -52,38 +50,13 @@ const Navbar = ({ isDarkMode, toggleDarkMode, isMobile, toggleMobileSidebar }) =
       </div>
 
       {/* Section droite - Actions */}
-      <div className="flex items-center space-x-4 md:space-x-6 ml-auto">
-        {/* ThemeToggle */}
-        <ThemeToggle isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
-        
-        {/* Notifications - masqué sur très petit écran */}
-        <div className="hidden sm:block">
-          <NotificationDropdown isDarkMode={isDarkMode} notifications={notifications} />
-        </div>
-
-        {/* Language Dropdown - adapté pour mobile */}
-        <div className="hidden md:block">
-          <LanguageDropdown 
-            isDarkMode={isDarkMode} 
-            selectedLanguage={selectedLanguage} 
-            onLanguageChange={setSelectedLanguage} 
-          />
-        </div>
-
-        {/* Version mobile du language dropdown - plus compact */}
-        <div className="md:hidden">
-          <LanguageDropdown 
-            isDarkMode={isDarkMode} 
-            selectedLanguage={selectedLanguage} 
-            onLanguageChange={setSelectedLanguage}
-            compact={true} // Prop pour version compacte si supportée
-          />
-        </div>
-
-        {/* User Menu */}
+      <div className="flex items-center space-x-6 md:space-x-6 ml-auto">
+       
+      
+       
         <UserMenu isDarkMode={isDarkMode} />
         
-        {/* Menu mobile pour notifications si masquées */}
+        
         {isMobile && (
           <div className="sm:hidden">
             <button
@@ -109,4 +82,4 @@ const Navbar = ({ isDarkMode, toggleDarkMode, isMobile, toggleMobileSidebar }) =
   );
 };
 
-export default Navbar;
+export default AdminNavbar;

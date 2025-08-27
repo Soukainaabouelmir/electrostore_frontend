@@ -17,12 +17,12 @@ const SidebarHeader = ({ isCollapsed, isDarkMode, setIsDarkMode }) => {
             whileTap={{ scale: 0.98 }}
           >
             <img 
-              src="/darklogo.png" 
+              src="/ekgamerlogo.png" 
               alt="HR Linktis Logo" 
               className="w-8 h-8 object-contain"
             />
             <span className="text-lg font-semibold text-gray-800 dark:text-white">
-              HR Linktis
+              EK GAMER
             </span>
           </motion.div>
           
