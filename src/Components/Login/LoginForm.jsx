@@ -52,7 +52,6 @@ const LoginForm = ({ onSubmit = (data) => console.log(data) }) => {
               </div>
             </div>
 
-            {/* Champ Mot de passe */}
             <div>
               <label className="block dark:text-gray-400 text-sm font-medium text-gray-700 mb-1">
                 Mot de passe
@@ -72,7 +71,6 @@ const LoginForm = ({ onSubmit = (data) => console.log(data) }) => {
               </div>
             </div>
 
-            {/* Options */}
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center">
                 <input

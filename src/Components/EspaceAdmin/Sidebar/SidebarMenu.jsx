@@ -5,14 +5,8 @@ import {
   FiUsers,
   FiLayers ,
   FiSettings,
-  FiUserCheck  ,
-  FiDollarSign ,
-  FiFileText ,
-  FiList,
   FiChevronDown,
-  FiBookOpen,
-  FiBarChart2,
-  FiFolder
+  
 } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../Navbar/LanguageContext';
@@ -38,9 +32,12 @@ const SidebarMenu = ({ isCollapsed, activeDropdown, toggleDropdown }) => {
       icon: <FiLayers />,
       submenu: [
         { title: "Liste des produits", path: "/admin/produits" },
+        { title: "Catégorie", path: "/admin/categorie" },
+        { title: "Marques", path: "/admin/marque" },
     
       ]
     },
+
     {
       title: "Commandes",
       path: "/admin/commandes" ,
@@ -49,6 +46,7 @@ const SidebarMenu = ({ isCollapsed, activeDropdown, toggleDropdown }) => {
         { title: "Liste des commandes", path: "/admin/commandes" },
       ]
     },
+
     {
       title: t("Clients"),
       path: "/admin/client",
@@ -58,6 +56,7 @@ const SidebarMenu = ({ isCollapsed, activeDropdown, toggleDropdown }) => {
        
       ]
     },
+
    
     {
       title: t("system"),
@@ -68,12 +67,10 @@ const SidebarMenu = ({ isCollapsed, activeDropdown, toggleDropdown }) => {
         
        
       ]
+      
     },
    
 
-   
- 
-    
   ];
 
   const MenuItem = ({ item, isCollapsed, activeDropdown, toggleDropdown, location }) => {
@@ -180,6 +177,7 @@ const SidebarMenu = ({ isCollapsed, activeDropdown, toggleDropdown }) => {
                 activeDropdown={activeDropdown}
                 toggleDropdown={handleDropdownToggle}
                 location={location}
+
               />
 
               {!isCollapsed && item.submenu && (

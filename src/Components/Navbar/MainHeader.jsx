@@ -6,7 +6,8 @@ import CartSidebar from "../Panier/CartSidebar";
 import { useCart } from "../Panier/CartContext ";
 
 const MainHeader = () => {
-  const navigate =useNavigate();
+  const navigate = useNavigate();
+  
   // Fonction pour récupérer la préférence de thème depuis les cookies
   const getInitialTheme = () => {
     try {
@@ -33,7 +34,23 @@ const MainHeader = () => {
   const [darkMode, setDarkMode] = useState(getInitialTheme);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [userName, setUserName] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { getTotalItems } = useCart();
+
+  // Vérifier si l'utilisateur est connecté et récupérer son nom
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const storedUserName = localStorage.getItem("userName");
+    
+    if (token && storedUserName) {
+      setIsLoggedIn(true);
+      setUserName(storedUserName);
+    } else {
+      setIsLoggedIn(false);
+      setUserName(null);
+    }
+  }, []);
 
   // Fonction pour sauvegarder la préférence dans les cookies
   const saveDarkModePreference = (isDark) => {
@@ -81,17 +98,28 @@ const MainHeader = () => {
     setDarkMode(!darkMode);
   };
 
+  // Fonction de déconnexion
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("userName");
+    setIsLoggedIn(false);
+    setUserName(null);
+    navigate('/');
+  };
+
   return (
     <>
       <div className="bg-white dark:bg-[#141414] py-4 px-4 lg:px-6 shadow-lg border-b border-gray-200 dark:border-gray-700 transition-all duration-300">
         <div className="container mx-auto flex flex-col lg:flex-row items-center justify-between gap-4">
           {/* Logo */}
-          <div className="flex items-center group cursor-pointer">
-            <div className="relative">
+          <div className="flex items-center group cursor-pointer" onClick={() => navigate('/')}>
+            {/* <div className="relative">
               <span className="text-3xl font-bold text-blue-900 dark:text-blue-400 transition-all duration-300 group-hover:scale-110">PC</span>
               <span className="text-3xl font-bold text-orange-500 dark:text-orange-400 transition-all duration-300 group-hover:scale-110">Shop</span>
               <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-900 to-orange-500 transition-all duration-300 group-hover:w-full"></div>
-            </div>
+            </div> */}
+            <img src='/ekgamerlogo.png' />
           </div>
           
           {/* Barre de recherche */}
@@ -126,15 +154,54 @@ const MainHeader = () => {
               )}
             </button>
             
-            {/* Authentification */}
-            <button 
-              className="p-3 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 transform hover:scale-110 shadow-sm"
-              aria-label="Compte utilisateur"
-              title="Mon compte"
-              onClick={goToCompte}
-            >
-              <FiUser className="text-xl text-gray-700 dark:text-orange-300" />
-            </button>
+            {/* Section Authentification/Utilisateur */}
+            <div className="flex items-center">
+              {isLoggedIn ? (
+                <div className="flex items-center space-x-2 relative group">
+                  {/* Nom de l'utilisateur */}
+                  <span className="text-gray-700 dark:text-gray-300 font-medium hidden sm:block">
+                    Bonjour, {userName}
+                  </span>
+                  
+                  {/* Bouton utilisateur avec menu déroulant */}
+                  <div className="relative">
+                    <button 
+                      className="p-3 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 transform hover:scale-110 shadow-sm"
+                      aria-label="Menu utilisateur"
+                      title="Mon compte"
+                      onClick={goToCompte}
+                    >
+                      <FiUser className="text-xl text-gray-700 dark:text-orange-300" />
+                    </button>
+                    
+                    {/* Menu déroulant (optionnel) */}
+                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                      <button
+                        onClick={goToCompte}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-lg"
+                      >
+                        Mon compte
+                      </button>
+                      <button
+                        onClick={handleLogout}
+                        className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-lg"
+                      >
+                        Se déconnecter
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <button 
+                  className="p-3 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 transform hover:scale-110 shadow-sm"
+                  aria-label="Se connecter"
+                  title="Se connecter"
+                  onClick={goToCompte}
+                >
+                  <FiUser className="text-xl text-gray-700 dark:text-orange-300" />
+                </button>
+              )}
+            </div>
             
             {/* Panier */}
             <button 

@@ -29,8 +29,7 @@ const SignUpPage = () => {
       });
 
       console.log("Statut de la réponse:", response.status);
-
-  
+      
       let data = null;
       try {
         const responseText = await response.text();
@@ -105,8 +104,11 @@ const SignUpPage = () => {
       )}
       
       <SignUpForm onSubmit={handleSignUp} />
+
     </div>
+
   );
+
 };
 
 export default SignUpPage;
