@@ -1,6 +1,5 @@
 import ActionButtons from "./ActionsButtons";
 
-
 const TableCategories = ({ categories, onEdit, onDelete }) => {
   return (
     <div className="bg-white dark:bg-[#1a202c] shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -22,6 +21,9 @@ const TableCategories = ({ categories, onEdit, onDelete }) => {
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Sous-catégories
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Statut
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Actions
@@ -64,6 +66,15 @@ const TableCategories = ({ categories, onEdit, onDelete }) => {
                     )}
                   </div>
                 </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                    category.status === 'active' 
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                      : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                  }`}>
+                    {category.status === 'active' ? 'Actif' : 'Inactif'}
+                  </span>
+                </td>
                 <td className="px-6 py-2 whitespace-nowrap text-right text-sm font-medium">
                  <ActionButtons
                     onEdit={() => onEdit(category)}
@@ -87,4 +98,5 @@ const TableCategories = ({ categories, onEdit, onDelete }) => {
     </div>
   );
 };
+
 export default TableCategories;
