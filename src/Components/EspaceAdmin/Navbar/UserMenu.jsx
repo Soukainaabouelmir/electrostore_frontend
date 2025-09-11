@@ -53,7 +53,6 @@ const UserMenu = ({ isDarkMode }) => {
 
   const colors = isDarkMode ? theme.dark : theme.light;
 
-  // Fonction de déconnexion
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
@@ -127,23 +126,21 @@ const UserMenu = ({ isDarkMode }) => {
 
       {showUserMenu && (
         <>
-
           <div 
             className="fixed inset-0 z-10" 
-            onClick={() => setShowUserMenu(false)}
-          ></div>
+            onClick={() => setShowUserMenu(false)}>
+
+            </div>
           
           <div 
-            className={`absolute right-0 mt-2 w-64 ${colors.bg} border ${colors.border} rounded-lg shadow-lg z-20 overflow-hidden`}
-          >
-            {/* En-tête du menu */}
+            className={`absolute right-0 mt-2 w-64 ${colors.bg} border ${colors.border} rounded-lg shadow-lg z-20 overflow-hidden`} >
             <div className={`p-4 border-b ${colors.border} ${colors.bgSecondary}`}>
               <div className="flex items-center gap-3">
 
                 <div className="w-12 h-12 rounded-full bg-red-600 text-white font-semibold text-lg flex items-center justify-center border-2 border-gray-200 dark:border-gray-600">
                   {userInfo.name ? getInitials(userInfo.name) : 'U'}
                 </div>
-                
+
                 <div className="flex-1 min-w-0">
                   <div className={`font-semibold ${colors.text} truncate`}>
                     {userInfo.name || 'Utilisateur'}

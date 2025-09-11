@@ -2,13 +2,12 @@ import React, { useState, useEffect } from "react";
 import { 
   FiMonitor, 
   FiHeadphones, 
-  FiCpu, 
-  FiHome, 
+  FiCpu,  
   FiTrendingUp,
   FiZap,
   FiStar
 } from "react-icons/fi";
-import { FaDesktop, FaMouse, FaKeyboard } from "react-icons/fa";
+import { FaMouse, FaKeyboard } from "react-icons/fa";
 
 const categories = [
   {
@@ -126,12 +125,9 @@ const CategoryCard = ({ category, index }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Background 3D */}
       <div className={`absolute inset-0 ${category.bgColor} dark:opacity-10 opacity-20`} />
       
-      {/* Image Container avec parallax */}
       <div className="relative h-72 sm:h-80 lg:h-96 overflow-hidden">
-        {/* Loading skeleton */}
         {!isLoaded && (
           <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-800 dark:to-gray-700 animate-pulse" />
         )}
@@ -146,15 +142,12 @@ const CategoryCard = ({ category, index }) => {
           loading="lazy"
         />
         
-        {/* Overlay gradients */}
         <div className={`absolute inset-0 bg-gradient-to-t ${category.gradient} opacity-60 group-hover:opacity-80 transition-opacity duration-500`} />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
         
-        {/* Effet de lumière animé */}
         <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-full group-hover:-translate-x-full transition-transform duration-1000 ${isHovered ? 'animate-shine' : ''}`} />
       </div>
 
-      {/* Badge flottant */}
       <div className="absolute top-4 right-4 z-20">
         <div className={`flex items-center space-x-1 px-3 py-1.5 ${getBadgeColor(category.badge)} text-white text-xs font-bold rounded-full shadow-lg transform ${isHovered ? 'scale-110' : 'scale-100'} transition-transform duration-300`}>
           {getBadgeIcon(category.badge)}
@@ -162,24 +155,20 @@ const CategoryCard = ({ category, index }) => {
         </div>
       </div>
 
-      {/* Icône flottante */}
       <div className="absolute top-4 left-4 z-20">
         <div className={`p-3 bg-white/20 dark:bg-black/20 backdrop-blur-sm rounded-full border border-white/30 dark:border-gray-600/30 text-white transition-all duration-300 ${isHovered ? 'scale-110 rotate-12' : 'scale-100'}`}>
           {React.cloneElement(category.icon, { className: "w-6 h-6" })}
         </div>
       </div>
 
-      {/* Contenu principal */}
       <div className="absolute inset-0 flex flex-col justify-end p-6 z-10">
         <div className={`transform transition-all duration-500 ${isHovered ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-90'}`}>
-          {/* Compteur de produits */}
           <div className="mb-3">
             <span className="inline-block px-3 py-1 bg-white/20 dark:bg-black/20 backdrop-blur-sm text-white text-xs font-medium rounded-full border border-white/30 dark:border-gray-600/30">
               {category.count}
             </span>
           </div>
           
-          {/* Titre et sous-titre */}
           <h3 className="text-2xl lg:text-3xl font-bold text-white mb-2 group-hover:text-yellow-300 transition-colors duration-300">
             {category.name}
           </h3>
@@ -187,7 +176,6 @@ const CategoryCard = ({ category, index }) => {
             {category.subtitle}
           </p>
           
-          {/* CTA Button avec animation */}
           <div className={`transform transition-all duration-500 ${isHovered ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
             <button className="group/btn relative overflow-hidden px-6 py-3 bg-white text-gray-900 font-semibold rounded-full hover:bg-yellow-300 transition-all duration-300 transform hover:scale-105 shadow-lg">
               <span className="relative z-10 flex items-center">
@@ -196,14 +184,12 @@ const CategoryCard = ({ category, index }) => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </span>
-              {/* Effet de vague au hover */}
               <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-400 transform scale-x-0 group-hover/btn:scale-x-100 transition-transform duration-300 origin-left" />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Particules flottantes */}
       {isHovered && (
         <>
           <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white/50 rounded-full animate-ping" style={{animationDelay: '0s'}} />
@@ -230,24 +216,21 @@ function CategorySection() {
 
     const section = document.getElementById('category-section');
     if (section) observer.observe(section);
-
     return () => observer.disconnect();
+    
   }, []);
 
   return (
     <section 
       id="category-section"
-      className="py-16 lg:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative overflow-hidden bg-white dark:!bg-[#141414]"
-    >
-      {/* Background décoratif */}
+      className="py-16 lg:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative overflow-hidden bg-white dark:!bg-[#141414]">
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 opacity-30 dark:opacity-20" />
       <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-purple-400/20 to-pink-400/20 dark:from-purple-900/20 dark:to-pink-900/20 rounded-full blur-3xl" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-cyan-400/20 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-full blur-3xl" />
       
-      {/* Titre de section avec animation */}
       <div className={`text-center mb-16 relative z-10 transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
         <div className="inline-block px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-semibold rounded-full mb-4">
-          🎮 Catégories Populaires
+          Catégories Populaires
         </div>
         <h2 className="text-4xl lg:text-6xl font-bold mb-6">
           <span className="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -262,7 +245,6 @@ function CategorySection() {
         </p>
       </div>
       
-      {/* Grille de catégories */}
       <div className={`grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10 relative z-10 transform transition-all duration-1000 delay-300 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
         {categories.map((category, index) => (
           <div
@@ -275,22 +257,24 @@ function CategorySection() {
         ))}
       </div>
 
-      {/* Styles CSS pour les animations personnalisées */}
       <style jsx>{`
         @keyframes shine {
           0% { transform: translateX(-100%) skewX(-12deg); }
           100% { transform: translateX(300%) skewX(-12deg); }
         }
-        
+
         .animate-shine {
           animation: shine 1.5s ease-in-out;
         }
         
+        .animate-shine {
+        animation: shine 1.5s ease-in-out;
+        }
+
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-20px); }
         }
-        
         .animate-float {
           animation: float 3s ease-in-out infinite;
         }
