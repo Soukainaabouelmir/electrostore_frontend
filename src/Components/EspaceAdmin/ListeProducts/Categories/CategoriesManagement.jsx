@@ -28,7 +28,8 @@ const CategoriesManagement = () => {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-         
+          // Ajoutez des headers d'authentification si nécessaire
+          // 'Authorization': `Bearer ${token}`,
         },
       });
 
@@ -107,11 +108,12 @@ const CategoriesManagement = () => {
     setFilteredCategories(filtered);
   }, [categories, searchTerm]);
 
+  // Fonction pour sauvegarder une catégorie via l'API
   const saveCategory = async (categoryData) => {
     try {
       const url = editingCategory 
         ? `${API_BASE_URL}/categories/${editingCategory.id}`
-        : `${API_BASE_URL}/categories`;
+        : `${API_BASE_URL}/admin/categories/store`;
       
       const method = editingCategory ? 'PUT' : 'POST';
       
@@ -120,6 +122,7 @@ const CategoriesManagement = () => {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          // 'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(categoryData)
       });
@@ -131,6 +134,7 @@ const CategoriesManagement = () => {
       const result = await response.json();
       
       if (result.success) {
+        // Recharger les données après la sauvegarde
         await fetchCategories();
         return true;
       } else {
@@ -143,6 +147,7 @@ const CategoriesManagement = () => {
     }
   };
 
+  // Fonction pour supprimer une catégorie via l'API
   const deleteCategory = async (categoryId) => {
     try {
       const response = await fetch(`${API_BASE_URL}/categories/${categoryId}`, {
@@ -161,6 +166,7 @@ const CategoriesManagement = () => {
       const result = await response.json();
       
       if (result.success) {
+        // Recharger les données après la suppression
         await fetchCategories();
         return true;
       } else {
@@ -193,12 +199,16 @@ const CategoriesManagement = () => {
   };
 
   const handleSaveCategory = async (categoryData) => {
-    const success = await saveCategory(categoryData);
-    if (success) {
+    const result = await saveCategory(categoryData);
+    if (result.success) {
       setShowModal(false);
       setEditingCategory(null);
+      // Optionnel: afficher un message de succès
+      // setSuccessMessage('Catégorie sauvegardée avec succès');
     } else {
-      alert('Erreur lors de la sauvegarde de la catégorie');
+      // L'erreur est déjà gérée dans setError par la fonction saveCategory
+      // On peut optionnellement afficher une alerte
+      alert(`Erreur lors de la sauvegarde: ${result.error}`);
     }
   };
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiEye, FiEdit, FiCopy, FiTrash2 } from 'react-icons/fi';
+import { FiEye, FiEdit, FiTrash2 } from 'react-icons/fi';
 import ViewModal from './ViewModal';
 import EditModal from './EditModal';
 import DeleteModal from './DeleteModal';

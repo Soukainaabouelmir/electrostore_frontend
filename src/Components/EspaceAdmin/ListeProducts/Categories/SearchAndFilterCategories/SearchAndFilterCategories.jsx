@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import AddButton from '../../../../Shared/AddButton';
 import SearchBar from '../../../../Shared/SearchBar';
-import ExportButton from './ExportButton';
-import FilterDropdown from './FilterDropDown';
+
 
 
 
@@ -10,13 +9,11 @@ const SearchAndFilterCategories = ({
   searchTerm, 
   setSearchTerm, 
   onAddNew,
-  currentViewData,
   allData,
   totalCount,
   filteredCount
 }) => {
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [filterParent, setFilterParent] = useState('all');
+
   const [signature, setSignature] = useState(null);
 
   React.useEffect(() => {
