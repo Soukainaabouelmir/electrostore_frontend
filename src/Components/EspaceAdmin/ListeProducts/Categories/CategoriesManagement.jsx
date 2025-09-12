@@ -23,6 +23,8 @@ const CategoriesManagement = () => {
   const API_BASE_URL = 'http://localhost:8000/api'; 
 
 
+// Dans CategoriesManagement.js - Modifier la fonction fetchCategories
+
 const fetchCategories = async () => {
   try {
     setLoading(true);
@@ -43,18 +45,50 @@ const fetchCategories = async () => {
     const result = await response.json();
     
     if (result.success) {
+      // Fonction pour obtenir tous les noms des sous-catégories de manière récursive
       const getAllSubCategoryNames = (category) => {
         let names = [];
         if (category.children && category.children.length > 0) {
           category.children.forEach(child => {
             names.push(child.nom);
+            // Récursion pour les sous-catégories de sous-catégories
             names = names.concat(getAllSubCategoryNames(child));
           });
         }
         return names;
       };
 
-      const transformedData = result.data.map(category => ({
+      // Fonction pour aplatir la hiérarchie si nécessaire pour l'affichage
+      const flattenCategories = (categories, level = 0) => {
+        let flattened = [];
+        categories.forEach(category => {
+          // Ajouter la catégorie actuelle
+          const transformedCategory = {
+            id: category.id,
+            nom: category.nom,
+            parent: category.parent_name,
+            parent_id: category.parent_id,
+            subCategories: getAllSubCategoryNames(category),
+            dateCreation: category.created_at || new Date().toISOString().split('T')[0],
+            status: category.status || 'active',
+            isMainCategory: category.is_main_category || level === 0,
+            level: level,
+            children: category.children || []
+          };
+          
+          flattened.push(transformedCategory);
+          
+          // Si on veut afficher les enfants comme des lignes séparées
+          // (optionnel selon votre besoin d'affichage)
+          if (category.children && category.children.length > 0) {
+            flattened = flattened.concat(flattenCategories(category.children, level + 1));
+          }
+        });
+        return flattened;
+      };
+
+      // CHANGEMENT ICI: Utiliser directement les données du backend qui sont déjà filtrées
+      const hierarchicalCategories = result.data.map(category => ({
         id: category.id,
         nom: category.nom,
         parent: category.parent_name,
@@ -62,11 +96,12 @@ const fetchCategories = async () => {
         subCategories: getAllSubCategoryNames(category),
         dateCreation: category.created_at || new Date().toISOString().split('T')[0],
         status: category.status || 'active',
-        isMainCategory: category.is_main_category
+        isMainCategory: category.is_main_category,
+        children: category.children || []
       }));
 
-      setCategories(transformedData);
-      setFilteredCategories(transformedData);
+      setCategories(hierarchicalCategories);
+      setFilteredCategories(hierarchicalCategories);
     } else {
       throw new Error(result.message || 'Erreur lors de la récupération des données');
     }
@@ -74,15 +109,37 @@ const fetchCategories = async () => {
     console.error('Erreur lors de la récupération des catégories:', err);
     setError(err.message);
     
+    // Mock data pour les tests
     const mockCategories = [
       {
         id: 1,
-        nom: 'Ordinateurs',
+        nom: 'Vêtements',
         parent: null,
-        subCategories: ['Pc Gamer', 'Pc Bureau', 'Pc Portable', 'Mac', 'Pc Ultrabook'],
+        subCategories: ['Femme', 'Homme'],
         dateCreation: '2024-01-15',
-        status: 'active'
-      },
+        status: 'active',
+        children: [
+          {
+            id: 2,
+            nom: 'Femme',
+            parent: 'Vêtements',
+            subCategories: ['Robes', 'Talons'],
+            dateCreation: '2024-01-16',
+            status: 'active',
+            children: [
+              {
+                id: 3,
+                nom: 'Robes',
+                parent: 'Femme',
+                subCategories: [],
+                dateCreation: '2024-01-17',
+                status: 'active',
+                children: []
+              }
+            ]
+          }
+        ]
+      }
     ];
     
     setCategories(mockCategories);
