@@ -21,7 +21,6 @@ const CategoriesManagement = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10); 
   const API_BASE_URL = 'http://localhost:8000/api'; 
 
-  // Vérification d'authentification au montage du composant
   useEffect(() => {
     const role = localStorage.getItem("role");
     const token = localStorage.getItem("token");

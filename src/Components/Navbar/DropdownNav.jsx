@@ -22,7 +22,7 @@ const DropdownNav = () => {
   const navItems = [
     {
       title: "Ordinateurs",
-      icon: <FiMonitor className="text-blue-400" />,
+      icon: <FiMonitor className="text-blue-400"/>,
       dropdown: [
         {
           title: "PC Gamer",
