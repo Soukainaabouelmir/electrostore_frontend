@@ -1,109 +1,135 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { Mail, Lock, ShoppingBag } from "lucide-react";
-import {Link} from 'react-router-dom';
- 
-const LoginForm = ({ onSubmit = (data) => console.log(data) }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+import { Link } from 'react-router-dom';
+
+const LoginForm = ({ onSubmit }) => {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    rememberMe: false
+  });
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleInputChange = useCallback((field) => (e) => {
+    const value = field === 'rememberMe' ? e.target.checked : e.target.value;
+    setFormData(prev => ({ ...prev, [field]: value }));
+  }, []);
+
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
-    setIsLoading(true);
+    if (!formData.email || !formData.password) return;
     
-    setTimeout(() => {
-      onSubmit({ email, password });
+    setIsLoading(true);
+    try {
+      await onSubmit(formData);
+    } finally {
       setIsLoading(false);
-    }, 1000);
-  };
+    }
+  }, [formData, onSubmit]);
+
+  const isFormValid = useMemo(() => 
+    formData.email.trim() && formData.password.trim()
+  , [formData.email, formData.password]);
 
   return (
-    <div className="min-h-screen  dark:bg-[#141414] flex items-center justify-center p-4">
-      <div className="w-full max-w-xl lg:max-w-2xl md:max-w-md">
-      
-        <div className=" dark:bg-[#141414]  p-8">
-      
+    <div className="min-h-screen dark:bg-[#141414] flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="dark:bg-[#141414] p-8">
+          
+          {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-600 rounded-lg mb-4">
               <ShoppingBag className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-blue-500 mb-2">TechStore</h1>
-            <p className="text-gray-600 dark:text-gray-400 text-sm">Connectez-vous à votre compte</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-blue-500 mb-2">
+              TechStore
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">
+              Connectez-vous à votre compte
+            </p>
           </div>
 
-          <div className="space-y-4">
-            {/* Champ Email */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email */}
             <div>
               <label className="block dark:text-gray-400 text-sm font-medium text-gray-700 mb-1">
                 Email
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="w-5 h-5 text-gray-400" />
-                </div>
+                <Mail className="absolute left-3 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
                 <input
                   type="email"
                   placeholder="votre@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formData.email}
+                  onChange={handleInputChange('email')}
                   required
-                  className="w-full pl-10 pr-3 py-3 border border-gray-300 dark:bg-[#141414] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="w-full pl-10 pr-3 py-3 border border-gray-300 dark:bg-[#141414] dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 />
               </div>
             </div>
 
+            {/* Password */}
             <div>
               <label className="block dark:text-gray-400 text-sm font-medium text-gray-700 mb-1">
                 Mot de passe
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="w-5 h-5 text-gray-400" />
-                </div>
+                <Lock className="absolute left-3 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
                 <input
                   type="password"
                   placeholder="Votre mot de passe"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={formData.password}
+                  onChange={handleInputChange('password')}
                   required
-                  className="w-full pl-10 pr-3 py-3 border dark:bg-[#141414] border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="w-full pl-10 pr-3 py-3 border border-gray-300 dark:bg-[#141414] dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 />
               </div>
             </div>
 
+            {/* Options */}
             <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center">
+              <label className="flex items-center cursor-pointer">
                 <input
                   type="checkbox"
+                  checked={formData.rememberMe}
+                  onChange={handleInputChange('rememberMe')}
                   className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
-                <span className="ml-2 text-gray-600 dark:text-gray-400">Se souvenir de moi</span>
+                <span className="ml-2 text-gray-600 dark:text-gray-400">
+                  Se souvenir de moi
+                </span>
               </label>
-              <a href="#" className="text-blue-600 hover:text-blue-500 font-medium">
+              <Link 
+                to="/forgot-password" 
+                className="text-blue-600 hover:text-blue-500 font-medium transition-colors"
+              >
                 Mot de passe oublié ?
-              </a>
+              </Link>
             </div>
 
-            {/* Bouton de connexion */}
+            {/* Submit Button */}
             <button
-              onClick={handleSubmit}
-              disabled={isLoading}
-              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition-colors duration-200 flex items-center justify-center"
+              type="submit"
+              disabled={isLoading || !isFormValid}
+              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors duration-200 flex items-center justify-center"
             >
               {isLoading ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
                   Connexion...
                 </>
               ) : (
                 "Se connecter"
               )}
             </button>
-          </div>
+          </form>
 
           <p className="text-center dark:text-gray-400 text-gray-600 text-sm mt-6">
             Pas encore de compte ?{" "}
-           <Link to="/signup" className="text-blue-600 hover:text-blue-500 font-medium">
+            <Link 
+              to="/signup" 
+              className="text-blue-600 hover:text-blue-500 font-medium transition-colors"
+            >
               Créer un compte
             </Link>
           </p>

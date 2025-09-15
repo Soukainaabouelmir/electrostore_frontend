@@ -1,172 +1,134 @@
-import React, { useState } from "react";
-import LoginForm from "./LoginForm";
+import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { AlertCircle, CheckCircle, X } from "lucide-react";
+import LoginForm from "./LoginForm";
+import AlertMessage from "./AlertMessage";
+
+const API_BASE_URL = 'http://localhost:8000/api';
+
+// Configuration des messages d'erreur
+const ERROR_MESSAGES = {
+  422: "Données invalides. Vérifiez vos informations.",
+  401: "Email ou mot de passe incorrect.",
+  429: "Trop de tentatives. Patientez quelques minutes.",
+  500: "Erreur serveur. Nos équipes ont été notifiées.",
+  503: "Service indisponible. Réessayez plus tard.",
+  network: "Problème de connexion. Vérifiez votre internet.",
+  parse: "Réponse serveur invalide. Réessayez.",
+  incomplete: "Données de connexion incomplètes.",
+  default: "Erreur inattendue. Réessayez."
+};
 
 const LoginPage = () => {
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [alert, setAlert] = useState({ show: false, type: '', title: '', message: '' });
   const navigate = useNavigate();
 
-  const handleLogin = async (credentials) => {
+  const showAlert = useCallback((type, title, message) => {
+    setAlert({ show: true, type, title, message });
+  }, []);
+
+  const hideAlert = useCallback(() => {
+    setAlert(prev => ({ ...prev, show: false }));
+  }, []);
+
+  const handleApiResponse = useCallback(async (response) => {
+    let data = null;
+    
     try {
-      setError(""); // Reset error state
-      setSuccess(""); // Reset success state
+      const responseText = await response.text();
+      if (responseText) {
+        data = JSON.parse(responseText);
+      }
+    } catch (parseError) {
+      console.error("Parse error:", parseError);
+      throw new Error('parse');
+    }
+
+    if (!response.ok) {
+      const errorKey = ERROR_MESSAGES[response.status] ? response.status : 'default';
+      throw new Error(ERROR_MESSAGES[errorKey]);
+    }
+
+    return data;
+  }, []);
+
+  const handleLogin = useCallback(async (credentials) => {
+    try {
+      hideAlert();
       
-      console.log("Tentative de connexion avec:", credentials);
-      
-      const response = await fetch("http://localhost:8000/api/login", {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          "Accept": "application/json", // Important pour Laravel
+          "Accept": "application/json"
         },
-        body: JSON.stringify(credentials),
-        mode: "cors",
+        body: JSON.stringify({
+          email: credentials.email,
+          password: credentials.password
+        }),
+        mode: "cors"
       });
 
-      console.log("Statut de la réponse:", response.status);
-      console.log("Headers de la réponse:", response.headers);
-
-      // Toujours essayer de parser le JSON
-      let data = null;
-      try {
-        const responseText = await response.text();
-        console.log("Réponse brute:", responseText);
-        
-        if (responseText) {
-          data = JSON.parse(responseText);
-        }
-      } catch (parseError) {
-        console.error("Erreur de parsing JSON:", parseError);
-        setError("Réponse serveur invalide. Veuillez réessayer.");
-        return;
-      }
-
-      if (!response.ok) {
-        console.log("Erreur de réponse:", data);
-        
-        // Gestion des différentes erreurs backend avec messages personnalisés
-        if (response.status === 422 && data?.errors) {
-          const messages = Object.values(data.errors).flat();
-          setError(`Erreur de validation : ${messages.join(" | ")}`);
-        } else if (response.status === 401) {
-          setError("Email ou mot de passe incorrect. Veuillez vérifier vos identifiants.");
-        } else if (response.status === 429) {
-          setError("Trop de tentatives de connexion. Veuillez patienter quelques minutes.");
-        } else if (response.status === 500) {
-          setError("Erreur serveur interne. Nos équipes techniques ont été notifiées.");
-        } else if (response.status === 503) {
-          setError("Service temporairement indisponible. Veuillez réessayer plus tard.");
-        } else {
-          setError(data?.message || `Erreur de connexion (${response.status}). Veuillez réessayer.`);
-        }
-        return;
-      }
-
-      // ✅ Succès - Stocker le token et les informations utilisateur
-      console.log("Connexion réussie:", data);
+      const data = await handleApiResponse(response);
       
-      if (data.access_token && data.user) {
-        // Afficher un message de succès temporaire
-        setSuccess(`Bienvenue ${data.user.name} ! Redirection en cours...`);
-        
-        localStorage.setItem("token", data.access_token);
-        localStorage.setItem("role", data.user.role);
-        localStorage.setItem("userName", data.user.name);
-        localStorage.setItem("userEmail", data.user.email || credentials.email);
-
-        // ✅ Redirection avec délai pour montrer le message de succès
-        setTimeout(() => {
-          if (data.user.role === "admin") {
-            navigate("/admin/dashboard");
-          } else {
-            // Redirection vers la page d'accueil pour les clients
-            navigate("/");
-          }
-        }, 1500);
-      } else {
-        setError("Données de connexion incomplètes. Veuillez réessayer.");
+      if (!data?.access_token || !data?.user) {
+        throw new Error('incomplete');
       }
+
+      // Succès
+      showAlert('success', 'Connexion réussie', 
+        `Bienvenue ${data.user.name} ! Redirection en cours...`);
+      
+      // Stockage sécurisé
+      const storage = {
+        token: data.access_token,
+        role: data.user.role,
+        userName: data.user.name,
+        userEmail: data.user.email || credentials.email
+      };
+      
+      Object.entries(storage).forEach(([key, value]) => {
+        localStorage.setItem(key, value);
+      });
+
+      // Redirection après délai
+      setTimeout(() => {
+        const redirectPath = data.user.role === "admin" ? "/admin/dashboard" : "/";
+        navigate(redirectPath, { replace: true });
+      }, 1500);
 
     } catch (error) {
-      console.error("Erreur réseau complète:", error);
-      if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        setError("Impossible de se connecter au serveur. Vérifiez votre connexion internet.");
-      } else {
-        setError("Une erreur inattendue s'est produite. Veuillez réessayer.");
+      console.error("Login error:", error);
+      
+      let errorMessage = ERROR_MESSAGES.default;
+      
+      if (error.message === 'network' || error.name === 'TypeError') {
+        errorMessage = ERROR_MESSAGES.network;
+      } else if (ERROR_MESSAGES[error.message]) {
+        errorMessage = ERROR_MESSAGES[error.message];
       }
+      
+      showAlert('error', 'Erreur de connexion', errorMessage);
     }
-  };
-
-  const closeError = () => {
-    setError("");
-  };
-
-  const closeSuccess = () => {
-    setSuccess("");
-  };
+  }, [handleApiResponse, hideAlert, showAlert, navigate]);
 
   return (
-    <div className="relative">
-      {/* Message d'erreur */}
-      {error && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md">
-          <div className="bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-800 rounded-lg p-4 shadow-lg animate-slide-down">
-            <div className="flex items-start">
-              <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-400 mt-0.5 mr-3 flex-shrink-0" />
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold text-red-800 dark:text-red-200 mb-1">
-                  Erreur de connexion
-                </h3>
-                <p className="text-sm text-red-700 dark:text-red-300">
-                  {error}
-                </p>
-              </div>
-              <button
-                onClick={closeError}
-                className="ml-3 text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
+    <>
+      {alert.show && (
+        <AlertMessage
+          type={alert.type}
+          title={alert.title}
+          message={alert.message}
+          onClose={hideAlert}
+        />
       )}
-
-      {/* Message de succès */}
-      {success && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md">
-          <div className="bg-green-50 dark:bg-green-900/50 border border-green-200 dark:border-green-800 rounded-lg p-4 shadow-lg animate-slide-down">
-            <div className="flex items-start">
-              <CheckCircle className="w-5 h-5 text-green-500 dark:text-green-400 mt-0.5 mr-3 flex-shrink-0" />
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold text-green-800 dark:text-green-200 mb-1">
-                  Connexion réussie
-                </h3>
-                <p className="text-sm text-green-700 dark:text-green-300">
-                  {success}
-                </p>
-              </div>
-              <button
-                onClick={closeSuccess}
-                className="ml-3 text-green-400 hover:text-green-600 dark:hover:text-green-300 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
+      
       <LoginForm onSubmit={handleLogin} />
-
-      {/* Styles pour l'animation */}
+      
       <style jsx>{`
-        @keyframes slide-down {
+        @keyframes slideDown {
           from {
             opacity: 0;
-            transform: translateX(-50%) translateY(-100%);
+            transform: translateX(-50%) translateY(-20px);
           }
           to {
             opacity: 1;
@@ -174,11 +136,11 @@ const LoginPage = () => {
           }
         }
         
-        .animate-slide-down {
-          animation: slide-down 0.3s ease-out;
+        .animate-slideDown {
+          animation: slideDown 0.3s ease-out forwards;
         }
       `}</style>
-    </div>
+    </>
   );
 };
 

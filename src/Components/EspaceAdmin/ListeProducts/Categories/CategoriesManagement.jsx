@@ -15,17 +15,12 @@ const CategoriesManagement = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10); 
-
   const API_BASE_URL = 'http://localhost:8000/api'; 
 
-
-// Dans CategoriesManagement.js - Modifier la fonction fetchCategories
-
-const fetchCategories = async () => {
+  const fetchCategories = async () => {
+    
   try {
     setLoading(true);
     setError(null);
@@ -41,28 +36,25 @@ const fetchCategories = async () => {
     if (!response.ok) {
       throw new Error(`Erreur HTTP: ${response.status}`);
     }
-
     const result = await response.json();
-    
-    if (result.success) {
-      // Fonction pour obtenir tous les noms des sous-catégories de manière récursive
-      const getAllSubCategoryNames = (category) => {
-        let names = [];
-        if (category.children && category.children.length > 0) {
-          category.children.forEach(child => {
-            names.push(child.nom);
-            // Récursion pour les sous-catégories de sous-catégories
-            names = names.concat(getAllSubCategoryNames(child));
-          });
-        }
-        return names;
-      };
 
-      // Fonction pour aplatir la hiérarchie si nécessaire pour l'affichage
+    if (result.success) {
+      // Dans votre fetchCategories(), remplacez la fonction getAllSubCategoryNames par :
+
+const getAllSubCategoryNames = (category) => {
+  let names = [];
+  if (category.children && category.children.length > 0) {
+    category.children.forEach(child => {
+      names.push(child.nom); 
+      // names = names.concat(getAllSubCategoryNames(child));
+    });
+  }
+  return names;
+};
+
       const flattenCategories = (categories, level = 0) => {
         let flattened = [];
         categories.forEach(category => {
-          // Ajouter la catégorie actuelle
           const transformedCategory = {
             id: category.id,
             nom: category.nom,
@@ -78,8 +70,6 @@ const fetchCategories = async () => {
           
           flattened.push(transformedCategory);
           
-          // Si on veut afficher les enfants comme des lignes séparées
-          // (optionnel selon votre besoin d'affichage)
           if (category.children && category.children.length > 0) {
             flattened = flattened.concat(flattenCategories(category.children, level + 1));
           }
@@ -87,7 +77,6 @@ const fetchCategories = async () => {
         return flattened;
       };
 
-      // CHANGEMENT ICI: Utiliser directement les données du backend qui sont déjà filtrées
       const hierarchicalCategories = result.data.map(category => ({
         id: category.id,
         nom: category.nom,
@@ -109,7 +98,6 @@ const fetchCategories = async () => {
     console.error('Erreur lors de la récupération des catégories:', err);
     setError(err.message);
     
-    // Mock data pour les tests
     const mockCategories = [
       {
         id: 1,
