@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
 import TableCategories from './TableCategories';
 import SearchAndFilterCategories from './SearchAndFilterCategories/SearchAndFilterCategories';
 import CategoryModal from './CategoryModal';
@@ -6,6 +7,7 @@ import { filterCategories } from '../../../Shared/filterCategories';
 import Pagination from '../../../Shared/Pagination'; 
 
 const CategoriesManagement = () => {
+  const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [filteredCategories, setFilteredCategories] = useState([]);
   const [currentPageCategories, setCurrentPageCategories] = useState([]); 
@@ -19,126 +21,140 @@ const CategoriesManagement = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10); 
   const API_BASE_URL = 'http://localhost:8000/api'; 
 
+  // Vérification d'authentification au montage du composant
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+    const token = localStorage.getItem("token");
+
+    // Vérification d'authentification
+    if (!token || role !== "admin") {
+      navigate("/compte"); 
+      return;
+    }
+  }, [navigate]);
+
   const fetchCategories = async () => {
-    
-  try {
-    setLoading(true);
-    setError(null);
-    
-    const response = await fetch(`${API_BASE_URL}/admin/categories`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-    });
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await fetch(`${API_BASE_URL}/admin/categories`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      });
 
-    if (!response.ok) {
-      throw new Error(`Erreur HTTP: ${response.status}`);
-    }
-    const result = await response.json();
-
-    if (result.success) {
-      // Dans votre fetchCategories(), remplacez la fonction getAllSubCategoryNames par :
-
-const getAllSubCategoryNames = (category) => {
-  let names = [];
-  if (category.children && category.children.length > 0) {
-    category.children.forEach(child => {
-      names.push(child.nom); 
-      // names = names.concat(getAllSubCategoryNames(child));
-    });
-  }
-  return names;
-};
-
-      const flattenCategories = (categories, level = 0) => {
-        let flattened = [];
-        categories.forEach(category => {
-          const transformedCategory = {
-            id: category.id,
-            nom: category.nom,
-            parent: category.parent_name,
-            parent_id: category.parent_id,
-            subCategories: getAllSubCategoryNames(category),
-            dateCreation: category.created_at || new Date().toISOString().split('T')[0],
-            status: category.status || 'active',
-            isMainCategory: category.is_main_category || level === 0,
-            level: level,
-            children: category.children || []
-          };
-          
-          flattened.push(transformedCategory);
-          
-          if (category.children && category.children.length > 0) {
-            flattened = flattened.concat(flattenCategories(category.children, level + 1));
-          }
-        });
-        return flattened;
-      };
-
-      const hierarchicalCategories = result.data.map(category => ({
-        id: category.id,
-        nom: category.nom,
-        parent: category.parent_name,
-        parent_id: category.parent_id,
-        subCategories: getAllSubCategoryNames(category),
-        dateCreation: category.created_at || new Date().toISOString().split('T')[0],
-        status: category.status || 'active',
-        isMainCategory: category.is_main_category,
-        children: category.children || []
-      }));
-
-      setCategories(hierarchicalCategories);
-      setFilteredCategories(hierarchicalCategories);
-    } else {
-      throw new Error(result.message || 'Erreur lors de la récupération des données');
-    }
-  } catch (err) {
-    console.error('Erreur lors de la récupération des catégories:', err);
-    setError(err.message);
-    
-    const mockCategories = [
-      {
-        id: 1,
-        nom: 'Vêtements',
-        parent: null,
-        subCategories: ['Femme', 'Homme'],
-        dateCreation: '2024-01-15',
-        status: 'active',
-        children: [
-          {
-            id: 2,
-            nom: 'Femme',
-            parent: 'Vêtements',
-            subCategories: ['Robes', 'Talons'],
-            dateCreation: '2024-01-16',
-            status: 'active',
-            children: [
-              {
-                id: 3,
-                nom: 'Robes',
-                parent: 'Femme',
-                subCategories: [],
-                dateCreation: '2024-01-17',
-                status: 'active',
-                children: []
-              }
-            ]
-          }
-        ]
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
       }
-    ];
-    
-    setCategories(mockCategories);
-    setFilteredCategories(mockCategories);
-  } finally {
-    setLoading(false);
-  }
-};
+      const result = await response.json();
+
+      if (result.success) {
+        const getAllSubCategoryNames = (category) => {
+          let names = [];
+          if (category.children && category.children.length > 0) {
+            category.children.forEach(child => {
+              names.push(child.nom); 
+            });
+          }
+          return names;
+        };
+
+        const flattenCategories = (categories, level = 0) => {
+          let flattened = [];
+          categories.forEach(category => {
+            const transformedCategory = {
+              id: category.id,
+              nom: category.nom,
+              parent: category.parent_name,
+              parent_id: category.parent_id,
+              subCategories: getAllSubCategoryNames(category),
+              dateCreation: category.created_at || new Date().toISOString().split('T')[0],
+              status: category.status || 'active',
+              isMainCategory: category.is_main_category || level === 0,
+              level: level,
+              children: category.children || []
+            };
+            
+            flattened.push(transformedCategory);
+            
+            if (category.children && category.children.length > 0) {
+              flattened = flattened.concat(flattenCategories(category.children, level + 1));
+            }
+          });
+          return flattened;
+        };
+
+        const hierarchicalCategories = result.data.map(category => ({
+          id: category.id,
+          nom: category.nom,
+          parent: category.parent_name,
+          parent_id: category.parent_id,
+          subCategories: getAllSubCategoryNames(category),
+          dateCreation: category.created_at || new Date().toISOString().split('T')[0],
+          status: category.status || 'active',
+          isMainCategory: category.is_main_category,
+          children: category.children || []
+        }));
+
+        setCategories(hierarchicalCategories);
+        setFilteredCategories(hierarchicalCategories);
+      } else {
+        throw new Error(result.message || 'Erreur lors de la récupération des données');
+      }
+    } catch (err) {
+      console.error('Erreur lors de la récupération des catégories:', err);
+      setError(err.message);
+      
+      const mockCategories = [
+        {
+          id: 1,
+          nom: 'Vêtements',
+          parent: null,
+          subCategories: ['Femme', 'Homme'],
+          dateCreation: '2024-01-15',
+          status: 'active',
+          children: [
+            {
+              id: 2,
+              nom: 'Femme',
+              parent: 'Vêtements',
+              subCategories: ['Robes', 'Talons'],
+              dateCreation: '2024-01-16',
+              status: 'active',
+              children: [
+                {
+                  id: 3,
+                  nom: 'Robes',
+                  parent: 'Femme',
+                  subCategories: [],
+                  dateCreation: '2024-01-17',
+                  status: 'active',
+                  children: []
+                }
+              ]
+            }
+          ]
+        }
+      ];
+      
+      setCategories(mockCategories);
+      setFilteredCategories(mockCategories);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetchCategories();
+    // Vérification d'authentification avant de charger les données
+    const role = localStorage.getItem("role");
+    const token = localStorage.getItem("token");
+
+    if (token && role === "admin") {
+      fetchCategories();
+    }
     
     const savedTheme = localStorage.getItem("darkMode") === "true";
     setIsDarkMode(savedTheme);
@@ -269,6 +285,14 @@ const getAllSubCategoryNames = (category) => {
     fetchCategories();
   };
 
+  // Vérification d'accès avant le rendu
+  const role = localStorage.getItem("role");
+  const token = localStorage.getItem("token");
+
+  if (!token || role !== "admin") {
+    return null; // Le useEffect va rediriger
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
@@ -285,7 +309,7 @@ const getAllSubCategoryNames = (category) => {
       <div className="max-w-full mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           
-                    {error && (
+          {error && (
             <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
               <strong className="font-bold">Erreur: </strong>
               <span className="block sm:inline">{error}</span>
