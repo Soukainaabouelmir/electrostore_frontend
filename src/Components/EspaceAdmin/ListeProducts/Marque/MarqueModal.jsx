@@ -1,411 +1,316 @@
 import React, { useState, useEffect } from 'react';
+import { XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
 
-const MarqueModal = ({ Marque, categories, onSave, onClose, isOpen }) => {
+const MarqueModal = ({ marques, onSave, onClose, isOpen }) => {
   const [formData, setFormData] = useState({
-    nom: Marque?.nom || '',
-    parent_id: Marque?.parent_id || null,
-    parent_name: Marque?.parent || '',
-    status: Marque?.status || 'active',
-    subCategories: Marque?.subCategories || []
+    nom: '',
+    description: '',
+    site: '',
+    logo: null, // Changé pour stocker le fichier
+    status: 'active'
   });
-
+  
   const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [newSubMarque, setNewSubMarque] = useState('');
-  const [subMarqueData, setSubMarqueData] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [logoPreview, setLogoPreview] = useState('');
 
+  // Initialiser le formulaire quand on édite une marque
   useEffect(() => {
-    if (isOpen) {
+    if (marques) {
       setFormData({
-        nom: Marque?.nom || '',
-        parent_id: Marque?.parent_id || null,
-        parent_name: Marque?.parent || '',
-        status: Marque?.status || 'active',
-        subCategories: Marque?.subCategories || []
+        nom: marques.nom || '',
+        description: marques.description || '',
+        site: marques.site || '',
+        logo: null, // Réinitialiser le fichier
+        status: marques.status || 'active'
       });
-      setErrors({});
-      setNewSubMarque('');
-      setSubMarqueData({});
+      setLogoPreview(marques.logo || '');
+    } else {
+      // Réinitialiser pour un nouvel ajout
+      setFormData({
+        nom: '',
+        description: '',
+        site: '',
+        logo: null,
+        status: 'active'
+      });
+      setLogoPreview('');
     }
-  }, [Marque, isOpen]);
+    setErrors({});
+  }, [marques, isOpen]);
+
+  const handleInputChange = (e) => {
+    const { name, value, type, files } = e.target;
+    
+    if (type === 'file') {
+      const file = files[0];
+      setFormData(prev => ({
+        ...prev,
+        [name]: file
+      }));
+      
+      // Créer une prévisualisation
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setLogoPreview(reader.result);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        setLogoPreview('');
+      }
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+      
+      // Supprimer l'erreur du champ quand l'utilisateur commence à taper
+      if (errors[name]) {
+        setErrors(prev => ({
+          ...prev,
+          [name]: ''
+        }));
+      }
+    }
+  };
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.nom.trim()) {
-      newErrors.nom = 'Le nom est requis';
-    } else if (formData.nom.trim().length < 2) {
-      newErrors.nom = 'Le nom doit contenir au moins 2 caractères';
+      newErrors.nom = 'Le nom de la marque est obligatoire';
     }
 
-    const existingMarque = categories.find(cat => 
-      cat.nom.toLowerCase() === formData.nom.trim().toLowerCase() && 
-      cat.id !== Marque?.id
-    );
-    
-    if (existingMarque) {
-      newErrors.nom = 'Une catégorie avec ce nom existe déjà';
+    if (formData.site && !isValidUrl(formData.site)) {
+      newErrors.site = 'Veuillez entrer une URL valide (ex: https://www.exemple.com)';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const addSubMarque = () => {
-    const trimmedName = newSubMarque.trim();
-    if (trimmedName && !formData.subCategories.includes(trimmedName)) {
-      setFormData({
-        ...formData,
-        subCategories: [...formData.subCategories, trimmedName]
-      });
-      // Initialiser les sous-sous-catégories pour cette nouvelle sous-catégorie
-      setSubMarqueData({
-        ...subMarqueData,
-        [trimmedName]: []
-      });
-      setNewSubMarque('');
+  const isValidUrl = (url) => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
     }
-  };
-
-  const removeSubMarque = (index) => {
-    const subMarqueToRemove = formData.subCategories[index];
-    const newSubCategories = formData.subCategories.filter((_, i) => i !== index);
-    
-    setFormData({
-      ...formData,
-      subCategories: newSubCategories
-    });
-    
-    // Supprimer aussi les données de sous-sous-catégories
-    const newSubMarqueData = { ...subMarqueData };
-    delete newSubMarqueData[subMarqueToRemove];
-    setSubMarqueData(newSubMarqueData);
-  };
-
-  const addSubSubMarque = (parentSubMarque, subSubMarqueName) => {
-    const trimmedName = subSubMarqueName.trim();
-    if (trimmedName && !subMarqueData[parentSubMarque]?.includes(trimmedName)) {
-      setSubMarqueData({
-        ...subMarqueData,
-        [parentSubMarque]: [...(subMarqueData[parentSubMarque] || []), trimmedName]
-      });
-    }
-  };
-
-  const removeSubSubMarque = (parentSubMarque, index) => {
-    const newSubSubCategories = subMarqueData[parentSubMarque].filter((_, i) => i !== index);
-    setSubMarqueData({
-      ...subMarqueData,
-      [parentSubMarque]: newSubSubCategories
-    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
     
-    setIsSubmitting(true);
-    setErrors({});
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
-      // Préparer les données pour l'API
-      const dataToSend = {
-        nom: formData.nom.trim(),
-        parent_id: formData.parent_id,
-        status: formData.status,
-        subCategories: formData.subCategories,
-        subMarqueData: subMarqueData // Inclure les sous-sous-catégories
-      };
-
-      await onSave(dataToSend);
+      const result = await onSave(formData);
+      if (result && result.success) {
+        onClose();
+      }
     } catch (error) {
-      console.error('Erreur lors de la soumission:', error);
+      console.error('Erreur lors de la sauvegarde:', error);
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
 
-  const handleParentChange = (e) => {
-    const selectedParentName = e.target.value;
-    let selectedParentId = null;
-    
-    if (selectedParentName) {
-      const parentMarque = categories.find(cat => cat.nom === selectedParentName);
-      selectedParentId = parentMarque ? parentMarque.id : null;
-    }
-    
-    setFormData({
-      ...formData,
-      parent_name: selectedParentName,
-      parent_id: selectedParentId,
-      // Clear subcategories when selecting a parent
-      subCategories: selectedParentId ? [] : formData.subCategories
-    });
-    
-    // Clear sub-subMarque data when changing parent
-    if (selectedParentId) {
-      setSubMarqueData({});
+  const handleClose = () => {
+    if (!isLoading) {
+      onClose();
     }
   };
 
-  const parentCategories = categories.filter(cat => 
-    cat.isMainMarque !== false && 
-    cat.id !== Marque?.id && 
-    !cat.parent_id 
-  );
-
-  const SubSubMarqueInput = ({ parentSubMarque }) => {
-    const [newSubSubMarque, setNewSubSubMarque] = useState('');
-
-    return (
-      <div className="ml-4 mt-2 p-3 bg-gray-50 dark:bg-gray-900 rounded-md">
-        <h5 className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
-          Sous-catégories de "{parentSubMarque}"
-        </h5>
-        
-        <div className="flex gap-2 mb-2">
-          <input
-            type="text"
-            value={newSubSubMarque}
-            onChange={(e) => setNewSubSubMarque(e.target.value)}
-            placeholder="Nom de la sous-sous-catégorie"
-            className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-            disabled={isSubmitting}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                addSubSubMarque(parentSubMarque, newSubSubMarque);
-                setNewSubSubMarque('');
-              }
-            }}
-          />
-          <button
-            type="button"
-            onClick={() => {
-              addSubSubMarque(parentSubMarque, newSubSubMarque);
-              setNewSubSubMarque('');
-            }}
-            className="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors disabled:bg-gray-400"
-            disabled={isSubmitting || !newSubSubMarque.trim()}
-          >
-            +
-          </button>
-        </div>
-        
-        <div className="flex flex-wrap gap-1">
-          {(subMarqueData[parentSubMarque] || []).map((subSub, index) => (
-            <span
-              key={index}
-              className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-            >
-              {subSub}
-              <button
-                type="button"
-                onClick={() => removeSubSubMarque(parentSubMarque, index)}
-                className="ml-1 text-green-600 hover:text-green-800 dark:text-green-300 font-semibold"
-                disabled={isSubmitting}
-              >
-                ×
-              </button>
-            </span>
-          ))}
-        </div>
-        
-        {(!subMarqueData[parentSubMarque] || subMarqueData[parentSubMarque].length === 0) && (
-          <p className="text-xs text-gray-400 dark:text-gray-500 italic">
-            Aucune sous-sous-catégorie ajoutée
-          </p>
-        )}
-      </div>
-    );
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget && !isLoading) {
+      onClose();
+    }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-[#1a202c] rounded-lg shadow-xl max-w-4xl w-full max-h-[95vh] overflow-y-auto">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            {Marque ? 'Modifier la catégorie' : 'Nouvelle catégorie'}
+    <div 
+      className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4"
+      onClick={handleBackdropClick}
+    >
+      <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+            {marques ? 'Modifier la marque' : 'Ajouter une nouvelle marque'}
           </h3>
+          <button
+            type="button"
+            onClick={handleClose}
+            disabled={isLoading}
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-50"
+          >
+            <XMarkIcon className="h-6 w-6" />
+          </button>
         </div>
-        
+
+        {/* Formulaire */}
         <form onSubmit={handleSubmit} className="p-6">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          {/* Nom de la marque et Statut sur la même ligne */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            {/* Nom de la marque */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Nom de la catégorie *
+              <label htmlFor="nom" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Nom de la marque <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
+                id="nom"
+                name="nom"
                 value={formData.nom}
-                onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white ${
-                  errors.nom ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                onChange={handleInputChange}
+                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white dark:border-gray-600 ${
+                  errors.nom ? 'border-red-500' : 'border-gray-300'
                 }`}
-                disabled={isSubmitting}
-                placeholder="Entrez le nom de la catégorie"
+                placeholder="Ex: Apple, Nike, Samsung..."
+                disabled={isLoading}
               />
               {errors.nom && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.nom}</p>
+                <p className="mt-1 text-sm text-red-600">{errors.nom}</p>
               )}
             </div>
-            
+
+            {/* Statut */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Statut
               </label>
               <select
+                id="status"
+                name="status"
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-                disabled={isSubmitting}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white dark:border-gray-600"
+                disabled={isLoading}
               >
                 <option value="active">Actif</option>
                 <option value="inactive">Inactif</option>
               </select>
             </div>
+          </div>
 
-            <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Catégorie parent (optionnel)
+          {/* Description */}
+        
+
+          {/* Site Web et Logo sur la même ligne */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            {/* Site Web */}
+            <div>
+              <label htmlFor="site" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Site Web
               </label>
-              <select
-                value={formData.parent_name}
-                onChange={handleParentChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-                disabled={isSubmitting}
-              >
-                <option value="">Aucune (catégorie principale)</option>
-                {parentCategories.map(cat => (
-                  <option key={cat.id} value={cat.nom}>
-                    {cat.nom}
-                  </option>
-                ))}
-              </select>
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                Sélectionnez une catégorie parent pour créer une sous-catégorie
-              </p>
+              <input
+                type="url"
+                id="site"
+                name="site"
+                value={formData.site}
+                onChange={handleInputChange}
+                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white dark:border-gray-600 ${
+                  errors.site ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="https://www.exemple.com"
+                disabled={isLoading}
+              />
+              {errors.site && (
+                <p className="mt-1 text-sm text-red-600">{errors.site}</p>
+              )}
+            </div>
+
+            {/* Logo File */}
+            <div>
+              <label htmlFor="logo" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Logo (Fichier)
+              </label>
+              <input
+                type="file"
+                id="logo"
+                name="logo"
+                onChange={handleInputChange}
+                accept="image/*"
+                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white dark:border-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 ${
+                  errors.logo ? 'border-red-500' : 'border-gray-300'
+                }`}
+                disabled={isLoading}
+              />
+              {errors.logo && (
+                <p className="mt-1 text-sm text-red-600">{errors.logo}</p>
+              )}
             </div>
           </div>
 
-          {/* Section des sous-catégories (uniquement pour les catégories principales) */}
-          {!formData.parent_id && (
-            <div className="mt-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Hiérarchie des sous-catégories
-              </label>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
-                Créez une hiérarchie complète : Catégorie → Sous-catégorie → Sous-sous-catégorie
-              </p>
-              
-              {/* Ajout de sous-catégorie */}
-              <div className="flex gap-2 mb-4">
-                <input
-                  type="text"
-                  value={newSubMarque}
-                  onChange={(e) => setNewSubMarque(e.target.value)}
-                  placeholder="Nom de la sous-catégorie"
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-                  disabled={isSubmitting}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      addSubMarque();
-                    }
+
+          {/* Prévisualisation du logo */}
+          {logoPreview && (
+            <div className="mb-6 flex items-center space-x-3">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Aperçu:</span>
+              <div className="flex items-center">
+                <img
+                  src={logoPreview}
+                  alt="Aperçu du logo"
+                  className="h-16 w-16 rounded object-contain border border-gray-300"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
                   }}
                 />
-                <button
-                  type="button"
-                  onClick={addSubMarque}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400"
-                  disabled={isSubmitting || !newSubMarque.trim()}
-                >
-                  Ajouter sous-catégorie
-                </button>
-              </div>
-              
-              {/* Liste des sous-catégories avec leurs sous-sous-catégories */}
-              <div className="space-y-4">
-                {formData.subCategories.map((sub, index) => (
-                  <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                        📁 {sub}
-                        <button
-                          type="button"
-                          onClick={() => removeSubMarque(index)}
-                          className="ml-1 text-blue-600 hover:text-blue-800 dark:text-blue-300 font-semibold"
-                          disabled={isSubmitting}
-                        >
-                          ×
-                        </button>
-                      </span>
-                    </div>
-                    
-                    <SubSubMarqueInput parentSubMarque={sub} />
-                  </div>
-                ))}
-              </div>
-              
-              {formData.subCategories.length === 0 && (
-                <div className="text-center py-8 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                  <p className="text-sm text-gray-400 dark:text-gray-500 italic">
-                    Aucune sous-catégorie ajoutée
-                  </p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                    Ajoutez des sous-catégories pour créer une hiérarchie
-                  </p>
+                <div className="h-16 w-16 rounded bg-gray-200 dark:bg-gray-600 flex items-center justify-center" style={{display: 'none'}}>
+                  <PhotoIcon className="h-8 w-8 text-gray-400" />
                 </div>
-              )}
-            </div>
-          )}
-
-          {/* Informations de la catégorie existante */}
-          {Marque && (
-            <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Informations de la catégorie
-              </h4>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                <p>ID: {Marque.id}</p>
-                {Marque.dateCreation && <p>Créée le: {Marque.dateCreation}</p>}
-                {Marque.subCategories && Marque.subCategories.length > 0 && (
-                  <p>Sous-catégories actuelles: {Marque.subCategories.length}</p>
-                )}
               </div>
             </div>
           )}
-          
-          <div className="mt-8 flex gap-3 justify-end">
+            <div className="mb-4">
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Description
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white dark:border-gray-600"
+              placeholder="Décrivez brièvement la marque..."
+              disabled={isLoading}
+            />
+          </div>
+
+          {/* Boutons */}
+          <div className="flex justify-end space-x-3">
             <button
               type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors dark:bg-gray-600 dark:text-gray-300 dark:hover:bg-gray-500"
-              disabled={isSubmitting}
+              onClick={handleClose}
+              disabled={isLoading}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:text-gray-300 dark:border-gray-500 dark:hover:bg-gray-800 disabled:opacity-50"
             >
               Annuler
             </button>
             <button
               type="submit"
-              className={`px-4 py-2 text-sm font-medium text-white rounded-md transition-colors ${
-                isSubmitting 
-                  ? 'bg-gray-400 cursor-not-allowed' 
-                  : 'bg-blue-600 hover:bg-blue-700'
-              }`}
-              disabled={isSubmitting}
+              disabled={isLoading}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? (
-                <span className="flex items-center gap-2">
-                  <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+              {isLoading ? (
+                <span className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  {Marque ? 'Modification...' : 'Création...'}
+                  Sauvegarde...
                 </span>
               ) : (
-                Marque ? 'Modifier' : 'Créer'
+                marques ? 'Modifier' : 'Ajouter'
               )}
             </button>
           </div>
