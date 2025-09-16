@@ -14,6 +14,7 @@ import Layout from './Components/EspaceAdmin/Layouts/layouts';
 import { LanguageProvider } from './Components/EspaceAdmin/Navbar/LanguageContext';
 import SignUpPage from './Components/SignUp/SignUpPage';
 import CategoriesManagement from './Components/EspaceAdmin/ListeProducts/Categories/CategoriesManagement';
+import MarqueManagement from './Components/EspaceAdmin/ListeProducts/Marque/MarqueManagement';
 
 function AppWrapper() {
   const location = useLocation();
@@ -33,6 +34,7 @@ function AppWrapper() {
               <Route path="/compte" element={<LoginPage />} />
               <Route path="/admin/dashboard" element={<Layout> <AdminDashboard /></Layout>} />
               <Route path="/admin/categories" element={<Layout> <CategoriesManagement /></Layout>} />
+              <Route path="/admin/marque" element={<Layout> <MarqueManagement /></Layout>} />
               <Route path="/signup" element={<SignUpPage />} />
             </Routes>
           </main>
