@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { FiSearch, FiShoppingCart, FiSun, FiMoon, FiUser } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+ // Importez le contexte
 
 import CartSidebar from "../Panier/CartSidebar";
 import { useCart } from "../Panier/CartContext ";
+import { useAuth } from "../Login/AuthContext";
 
 const MainHeader = () => {
   const navigate = useNavigate();
+  const { isLoggedIn, userName, logout } = useAuth(); // Utilisez le contexte
   
   // Fonction pour récupérer la préférence de thème depuis les cookies
   const getInitialTheme = () => {
@@ -34,23 +37,7 @@ const MainHeader = () => {
   const [darkMode, setDarkMode] = useState(getInitialTheme);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [userName, setUserName] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { getTotalItems } = useCart();
-
-  // Vérifier si l'utilisateur est connecté et récupérer son nom
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const storedUserName = localStorage.getItem("userName");
-    
-    if (token && storedUserName) {
-      setIsLoggedIn(true);
-      setUserName(storedUserName);
-    } else {
-      setIsLoggedIn(false);
-      setUserName(null);
-    }
-  }, []);
 
   // Fonction pour sauvegarder la préférence dans les cookies
   const saveDarkModePreference = (isDark) => {
@@ -98,13 +85,9 @@ const MainHeader = () => {
     setDarkMode(!darkMode);
   };
 
-  // Fonction de déconnexion
+  // Fonction de déconnexion mise à jour
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    localStorage.removeItem("userName");
-    setIsLoggedIn(false);
-    setUserName(null);
+    logout(); // Utilisez la fonction logout du contexte
     navigate('/');
   };
 
@@ -119,7 +102,7 @@ const MainHeader = () => {
               <span className="text-3xl font-bold text-orange-500 dark:text-orange-400 transition-all duration-300 group-hover:scale-110">Shop</span>
               <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-900 to-orange-500 transition-all duration-300 group-hover:w-full"></div>
             </div> */}
-            <img src='/ekgamerlogo.png' />
+            <img src='/ekgamerlogo.png' alt="EK Gamer Logo" />
           </div>
           
           {/* Barre de recherche */}

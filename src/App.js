@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { AuthProvider } from './Components/Login/AuthContext'; // Ajoutez cette ligne
 
 import Home from './page/Home/Home';
 import Navbar from './Components/Navbar/Navbar';
@@ -18,26 +19,26 @@ function AppWrapper() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
 
-
   return (
-     <LanguageProvider>
-    <div className="app">
-      {!isAdminRoute && <Navbar />} 
-      <main className="main-content">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/pc/gamer" element={<PcGamerPage />} />
-          <Route path="/pc/bureau" element={<PcBureauPage />} />
-          <Route path="/pc/portable" element={<PcPortablePage />} />
-          <Route path="/compte" element={<LoginPage />} />
-          <Route path="/admin/dashboard" element={<Layout> <AdminDashboard /></Layout>} />
-          <Route path="/admin/categories" element={<Layout> <CategoriesManagement /></Layout>} />
-          <Route path="/signup" element={<SignUpPage />} />
-        
-        </Routes>
-      </main>
-      {!isAdminRoute && <Footer />} 
-    </div>
+    <LanguageProvider>
+      <AuthProvider> {/* Ajoutez l'AuthProvider ici */}
+        <div className="app">
+          {!isAdminRoute && <Navbar />} 
+          <main className="main-content">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/pc/gamer" element={<PcGamerPage />} />
+              <Route path="/pc/bureau" element={<PcBureauPage />} />
+              <Route path="/pc/portable" element={<PcPortablePage />} />
+              <Route path="/compte" element={<LoginPage />} />
+              <Route path="/admin/dashboard" element={<Layout> <AdminDashboard /></Layout>} />
+              <Route path="/admin/categories" element={<Layout> <CategoriesManagement /></Layout>} />
+              <Route path="/signup" element={<SignUpPage />} />
+            </Routes>
+          </main>
+          {!isAdminRoute && <Footer />} 
+        </div>
+      </AuthProvider> {/* Fermez l'AuthProvider ici */}
     </LanguageProvider>
   );
 }

@@ -1,11 +1,10 @@
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "./AuthContext"; 
 import LoginForm from "./LoginForm";
 import AlertMessage from "./AlertMessage";
-
 const API_BASE_URL = 'http://localhost:8000/api';
 
-// Configuration des messages d'erreur
 const ERROR_MESSAGES = {
   422: "Données invalides. Vérifiez vos informations.",
   401: "Email ou mot de passe incorrect.",
@@ -21,6 +20,7 @@ const ERROR_MESSAGES = {
 const LoginPage = () => {
   const [alert, setAlert] = useState({ show: false, type: '', title: '', message: '' });
   const navigate = useNavigate();
+  const { login } = useAuth(); 
 
   const showAlert = useCallback((type, title, message) => {
     setAlert({ show: true, type, title, message });
@@ -32,14 +32,13 @@ const LoginPage = () => {
 
   const handleApiResponse = useCallback(async (response) => {
     let data = null;
-    
     try {
       const responseText = await response.text();
       if (responseText) {
         data = JSON.parse(responseText);
       }
     } catch (parseError) {
-      console.error("Parse error:", parseError);
+     
       throw new Error('parse');
     }
 
@@ -74,33 +73,19 @@ const LoginPage = () => {
         throw new Error('incomplete');
       }
 
-      // Succès
+      login(data);
+
       showAlert('success', 'Connexion réussie', 
         `Bienvenue ${data.user.name} ! Redirection en cours...`);
-      
-      // Stockage sécurisé
-      const storage = {
-        token: data.access_token,
-        role: data.user.role,
-        userName: data.user.name,
-        userEmail: data.user.email || credentials.email
-      };
-      
-      Object.entries(storage).forEach(([key, value]) => {
-        localStorage.setItem(key, value);
-      });
 
-      // Redirection après délai
       setTimeout(() => {
         const redirectPath = data.user.role === "admin" ? "/admin/dashboard" : "/";
         navigate(redirectPath, { replace: true });
       }, 1500);
 
     } catch (error) {
-      console.error("Login error:", error);
       
       let errorMessage = ERROR_MESSAGES.default;
-      
       if (error.message === 'network' || error.name === 'TypeError') {
         errorMessage = ERROR_MESSAGES.network;
       } else if (ERROR_MESSAGES[error.message]) {
@@ -109,7 +94,7 @@ const LoginPage = () => {
       
       showAlert('error', 'Erreur de connexion', errorMessage);
     }
-  }, [handleApiResponse, hideAlert, showAlert, navigate]);
+  }, [handleApiResponse, hideAlert, showAlert, navigate, login]);
 
   return (
     <>
@@ -121,9 +106,8 @@ const LoginPage = () => {
           onClose={hideAlert}
         />
       )}
-      
+     
       <LoginForm onSubmit={handleLogin} />
-      
       <style jsx>{`
         @keyframes slideDown {
           from {
@@ -135,7 +119,6 @@ const LoginPage = () => {
             transform: translateX(-50%) translateY(0);
           }
         }
-        
         .animate-slideDown {
           animation: slideDown 0.3s ease-out forwards;
         }

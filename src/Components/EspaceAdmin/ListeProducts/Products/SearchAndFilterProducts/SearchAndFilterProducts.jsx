@@ -26,6 +26,7 @@ const SearchAndFilterProducts = ({
     active: allData.filter(cat => cat.status === 'active').length,
     parents: allData.filter(cat => !cat.parent).length,
     children: allData.filter(cat => cat.parent).length
+    
   };
 
   return (

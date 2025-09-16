@@ -58,6 +58,7 @@ const LoginForm = ({ onSubmit }) => {
               <div className="relative">
                 <Mail className="absolute left-3 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
                 <input
+                id="email"
                   type="email"
                   placeholder="votre@email.com"
                   value={formData.email}
@@ -76,6 +77,7 @@ const LoginForm = ({ onSubmit }) => {
               <div className="relative">
                 <Lock className="absolute left-3 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
                 <input
+                id="password"
                   type="password"
                   placeholder="Votre mot de passe"
                   value={formData.password}
