@@ -99,26 +99,40 @@ const MarqueModal = ({ marques, onSave, onClose, isOpen }) => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Dans MarqueModal.js - Modifier la fonction handleSubmit
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  if (!validateForm()) {
+    return;
+  }
+
+  setIsLoading(true);
+
+  try {
+    // Créer FormData pour gérer les fichiers
+    const submitData = new FormData();
+    submitData.append('nom', formData.nom);
+    submitData.append('description', formData.description || '');
+    submitData.append('site', formData.site || '');
+    submitData.append('status', formData.status);
     
-    if (!validateForm()) {
-      return;
+    // Ajouter le fichier logo s'il existe
+    if (formData.logo) {
+      submitData.append('logo', formData.logo);
     }
 
-    setIsLoading(true);
-
-    try {
-      const result = await onSave(formData);
-      if (result && result.success) {
-        onClose();
-      }
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error);
-    } finally {
-      setIsLoading(false);
+    const result = await onSave(submitData);
+    if (result && result.success) {
+      onClose();
     }
-  };
+  } catch (error) {
+    console.error('Erreur lors de la sauvegarde:', error);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleClose = () => {
     if (!isLoading) {

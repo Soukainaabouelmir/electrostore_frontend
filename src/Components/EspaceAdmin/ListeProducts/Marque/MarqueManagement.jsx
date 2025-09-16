@@ -172,41 +172,52 @@ const MarqueManagement = () => {
     setCurrentPage(1); 
   };
 
-  const savemarques = async (marquesData) => {
-    try {
-      const url = editingmarques 
-        ? `${API_BASE_URL}/admin/marques/${editingmarques.id}`
-        : `${API_BASE_URL}/admin/marques`;
-      
-      const method = editingmarques ? 'PUT' : 'POST';
-      
-      const response = await fetch(url, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify(marquesData)
-      });
+  // Dans MarqueManagement.js - Modifier la fonction savemarques
 
-      if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status}`);
-      }
-
-      const result = await response.json();
-      
-      if (result.success) {
-        await fetchMarque();
-        return { success: true };
-      } else {
-        throw new Error(result.message || 'Erreur lors de la sauvegarde');
-      }
-    } catch (err) {
-      console.error('Erreur lors de la sauvegarde:', err);
-      setError(err.message);
-      return { success: false, error: err.message };
+const savemarques = async (marquesData) => {
+  try {
+    const url = editingmarques 
+      ? `${API_BASE_URL}/admin/marques/${editingmarques.id}`
+      : `${API_BASE_URL}/admin/marques/store`;
+    
+    const method = editingmarques ? 'PUT' : 'POST';
+    
+    // Vérifier si c'est FormData (avec fichier) ou objet simple
+    const isFormData = marquesData instanceof FormData;
+    
+    const headers = {
+      'Accept': 'application/json',
+    };
+    
+    if (!isFormData) {
+      headers['Content-Type'] = 'application/json';
     }
-  };
+    
+    const response = await fetch(url, {
+      method: method,
+      headers: headers,
+      body: isFormData ? marquesData : JSON.stringify(marquesData)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Erreur HTTP: ${response.status} - ${errorText}`);
+    }
+
+    const result = await response.json();
+    
+    if (result.success) {
+      await fetchMarque();
+      return { success: true };
+    } else {
+      throw new Error(result.message || 'Erreur lors de la sauvegarde');
+    }
+  } catch (err) {
+    console.error('Erreur lors de la sauvegarde:', err);
+    setError(err.message);
+    return { success: false, error: err.message };
+  }
+};
 
   const deletemarques = async (marquesId) => {
     try {
