@@ -305,15 +305,14 @@ const MarqueManagement = () => {
   const handleCloseModal = () => {
     setShowModal(false);
     setEditingmarques(null);
-    setError(null); // Réinitialiser les erreurs en fermant le modal
+    setError(null); 
   };
 
   const handleRefresh = () => {
-    setError(null); // Réinitialiser les erreurs au rafraîchissement
+    setError(null); 
     fetchMarque();
   };
 
-  // Vérification d'accès avant le rendu
   const role = localStorage.getItem("role");
   const token = localStorage.getItem("token");
 
@@ -337,7 +336,6 @@ const MarqueManagement = () => {
       <div className="max-w-full mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           
-          {/* Afficher l'erreur seulement si elle n'est pas liée à une suppression */}
           {error && (
             <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
               <strong className="font-bold">Erreur: </strong>

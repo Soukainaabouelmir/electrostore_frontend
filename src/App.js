@@ -15,6 +15,7 @@ import { LanguageProvider } from './Components/EspaceAdmin/Navbar/LanguageContex
 import SignUpPage from './Components/SignUp/SignUpPage';
 import CategoriesManagement from './Components/EspaceAdmin/ListeProducts/Categories/CategoriesManagement';
 import MarqueManagement from './Components/EspaceAdmin/ListeProducts/Marque/MarqueManagement';
+import ProductsManagement from './Components/EspaceAdmin/ListeProducts/Products/ProductsManagement';
 
 function AppWrapper() {
   const location = useLocation();
@@ -35,6 +36,7 @@ function AppWrapper() {
               <Route path="/admin/dashboard" element={<Layout> <AdminDashboard /></Layout>} />
               <Route path="/admin/categories" element={<Layout> <CategoriesManagement /></Layout>} />
               <Route path="/admin/marque" element={<Layout> <MarqueManagement /></Layout>} />
+              <Route path="/admin/products" element={<Layout> <ProductsManagement /></Layout>} />
               <Route path="/signup" element={<SignUpPage />} />
             </Routes>
           </main>

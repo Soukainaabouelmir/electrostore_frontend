@@ -31,7 +31,7 @@ const SidebarMenu = ({ isCollapsed, activeDropdown, toggleDropdown }) => {
       path: "/admin/produits",
       icon: <FiLayers />,
       submenu: [
-        { title: "Liste des produits", path: "/admin/produits" },
+        { title: "Liste des produits", path: "/admin/products" },
         { title: "Catégorie", path: "/admin/categories" },
         { title: "Marques", path: "/admin/marque" },
     

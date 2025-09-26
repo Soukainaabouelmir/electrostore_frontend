@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
   FiArrowLeft, 
-  FiHeart, 
-  FiShare2, 
   FiTruck, 
   FiShield, 
   FiRefreshCcw,
@@ -14,7 +12,6 @@ import {
   FiCpu,
   FiHardDrive,
   FiZap,
-  FiGift
 } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../Panier/CartContext ';
@@ -143,7 +140,7 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
   }
 
   const ProductIcon = getProductIcon(product.category);
-  return (
+  return ( 
     <div className="min-h-screen bg-white dark:bg-[#141414]">
       <div className="bg-white dark:bg-[#141414] ">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
@@ -216,7 +213,6 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
                 {product.name}
               </h1>
 
-              {/* Rating */}
               <div className="flex items-center space-x-3 mb-4">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
@@ -338,7 +334,6 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
                 { id: 'specs', label: 'Spécifications', icon: FiCpu },
                 { id: 'description', label: 'Description', icon: FiMonitor },
                 { id: 'compatibility', label: 'Jeux compatibles', icon: FiZap },
-                { id: 'accessories', label: 'Accessoires inclus', icon: FiGift }
               ].map(({ id, label, icon: Icon }) => (
                 <button
                   key={id}
@@ -413,34 +408,7 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
               </div>
             )}
 
-            {activeTab === 'accessories' && (
-              <div className="bg-white dark:bg-[#1e1e1e] rounded-lg p-6 shadow-sm">
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-                  Accessoires inclus
-                </h3>
-                <div className="space-y-4">
-                  {product.includedAccessories.map((accessory, index) => (
-                    <div key={index} className="flex items-center space-x-3">
-                      <FiGift className="w-5 h-5 text-blue-500" />
-                      <span className="text-gray-700 dark:text-gray-300">
-                        {accessory}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-                
-                <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                  <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">
-                    Services inclus
-                  </h4>
-                  <ul className="space-y-2 text-sm text-blue-700 dark:text-blue-300">
-                    <li>• {product.warranty}</li>
-                    <li>• {product.shipping}</li>
-                    <li>• {product.returnPolicy}</li>
-                  </ul>
-                </div>
-              </div>
-            )}
+           
           </div>
         </div>
       </div>

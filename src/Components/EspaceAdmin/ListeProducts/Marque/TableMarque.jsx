@@ -3,16 +3,13 @@ import React from "react";
 
 const TableMarque = ({ Marque, onEdit, onDelete }) => {
   
-  // Fonction pour construire l'URL de l'image
   const getImageUrl = (logoPath) => {
     if (!logoPath) return null;
     
-    // Si l'URL est déjà complète (commence par http)
     if (logoPath.startsWith('http')) {
       return logoPath;
     }
     
-    // Si c'est juste le chemin, construire l'URL complète
     const API_BASE_URL = 'http://localhost:8000';
     return `${API_BASE_URL}/storage/${logoPath}`;
   };
@@ -52,10 +49,8 @@ const TableMarque = ({ Marque, onEdit, onDelete }) => {
           <tbody className="bg-white dark:bg-[#1a202c] divide-y divide-gray-200 dark:divide-gray-800">
             {Marque.map((marque) => {
               const imageUrl = getImageUrl(marque.logo);
-              
               return (
                 <tr key={marque.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                  {/* Logo */}
                   <td className="px-4 py-3 whitespace-nowrap">
                     <div className="flex items-center">
                       {imageUrl ? (
@@ -81,14 +76,12 @@ const TableMarque = ({ Marque, onEdit, onDelete }) => {
                     </div>
                   </td>
 
-                  {/* Nom */}
                   <td className="px-4 py-3 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900 dark:text-white">
                       {marque.nom}
                     </div>
                   </td>
 
-                  {/* Description */}
                   <td className="px-4 py-3">
                     <div className="text-sm text-gray-600 dark:text-gray-400 max-w-xs">
                       {marque.description ? (
@@ -103,7 +96,6 @@ const TableMarque = ({ Marque, onEdit, onDelete }) => {
                     </div>
                   </td>
 
-                  {/* Site Web */}
                   <td className="px-4 py-3 whitespace-nowrap">
                     {marque.site ? (
                       <a
@@ -121,7 +113,6 @@ const TableMarque = ({ Marque, onEdit, onDelete }) => {
                     )}
                   </td>
 
-                  {/* Statut */}
                   <td className="px-4 py-3 whitespace-nowrap">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       marque.status === 'active' || marque.status === 'actif'
@@ -132,7 +123,6 @@ const TableMarque = ({ Marque, onEdit, onDelete }) => {
                     </span>
                   </td>
 
-                  {/* Actions */}
                   <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
                     <ActionButtons
                       Marque={marque}  
