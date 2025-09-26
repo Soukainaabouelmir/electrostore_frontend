@@ -135,7 +135,8 @@ const TableMarque = ({ Marque, onEdit, onDelete }) => {
                   {/* Actions */}
                   <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
                     <ActionButtons
-                      onEdit={() => onEdit(marque)}
+                      Marque={marque}  
+                      onEdit={onEdit}
                       onDelete={() => onDelete(marque)}
                     />
                   </td>

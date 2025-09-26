@@ -174,29 +174,33 @@ const MarqueManagement = () => {
 
   // Dans MarqueManagement.js - Modifier la fonction savemarques
 
-const savemarques = async (marquesData) => {
+// Ajoutez cette fonction dans votre MarqueManagement.js
+
+// Fonction pour gérer l'édition depuis ActionButtons
+// Dans MarqueManagement.js - Corrections des fonctions de sauvegarde
+
+// 1. Correction de l'URL dans handleEditFromActionButtons
+const handleEditFromActionButtons = async (marque, formData) => {
+  console.log('handleEditFromActionButtons called with:', marque, formData);
+  
   try {
-    const url = editingmarques 
-      ? `${API_BASE_URL}/admin/marques/${editingmarques.id}`
-      : `${API_BASE_URL}/admin/marques/store`;
-    
-    const method = editingmarques ? 'PUT' : 'POST';
-    
-    // Vérifier si c'est FormData (avec fichier) ou objet simple
-    const isFormData = marquesData instanceof FormData;
+    // CORRECTION: Suppression du double '/api' dans l'URL
+    const url = `${API_BASE_URL}/admin/marques/edit/${marque.id}`;
     
     const headers = {
       'Accept': 'application/json',
     };
     
+    // Si c'est FormData, ne pas ajouter Content-Type
+    const isFormData = formData instanceof FormData;
     if (!isFormData) {
       headers['Content-Type'] = 'application/json';
     }
     
     const response = await fetch(url, {
-      method: method,
+      method: 'PUT',
       headers: headers,
-      body: isFormData ? marquesData : JSON.stringify(marquesData)
+      body: isFormData ? formData : JSON.stringify(formData)
     });
 
     if (!response.ok) {
@@ -207,8 +211,106 @@ const savemarques = async (marquesData) => {
     const result = await response.json();
     
     if (result.success) {
+      await fetchMarque(); // Recharger les données
+      return { success: true };
+    } else {
+      throw new Error(result.message || 'Erreur lors de la sauvegarde');
+    }
+  } catch (err) {
+    console.error('Erreur lors de la sauvegarde:', err);
+    setError(err.message);
+    return { success: false, error: err.message };
+  }
+};
+
+// 2. Correction de la fonction savemarques
+const savemarques = async (marquesData, marqueId = null) => {
+  try {
+    // Si on a un ID spécifique, c'est une modification
+    const isEditing = marqueId || editingmarques;
+    const finalId = marqueId || (editingmarques ? editingmarques.id : null);
+    
+    // CORRECTION: URL corrigée (sans double /api)
+    const url = isEditing 
+      ? `${API_BASE_URL}/admin/marques/edit/${finalId}`
+      : `${API_BASE_URL}/admin/marques/store`;
+    
+    const method = isEditing ? 'PUT' : 'POST';
+    
+    const isFormData = marquesData instanceof FormData;
+    
+    const headers = {
+      'Accept': 'application/json',
+    };
+    
+    if (!isFormData) {
+      headers['Content-Type'] = 'application/json';
+    }
+    
+    console.log('Sending request to:', url); // Debug log
+    console.log('Method:', method); // Debug log
+    console.log('IsFormData:', isFormData); // Debug log
+    
+    const response = await fetch(url, {
+      method: method,
+      headers: headers,
+      body: isFormData ? marquesData : JSON.stringify(marquesData)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Response error:', errorText); // Debug log
+      throw new Error(`Erreur HTTP: ${response.status} - ${errorText}`);
+    }
+
+    const result = await response.json();
+    console.log('Response result:', result); // Debug log
+    
+    if (result.success) {
       await fetchMarque();
       return { success: true };
+    } else {
+      throw new Error(result.message || 'Erreur lors de la sauvegarde');
+    }
+  } catch (err) {
+    console.error('Erreur lors de la sauvegarde:', err);
+    setError(err.message);
+    return { success: false, error: err.message };
+  }
+};
+
+// 3. Ajout d'une fonction spécifique pour l'édition depuis EditModal
+const handleEditFromModal = async (marqueId, formData) => {
+  console.log('handleEditFromModal called with ID:', marqueId, 'FormData:', formData);
+  
+  try {
+    const url = `${API_BASE_URL}/admin/marques/edit/${marqueId}`;
+    
+    const headers = {
+      'Accept': 'application/json',
+    };
+    
+    // FormData n'a pas besoin de Content-Type (le navigateur l'ajoute automatiquement)
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: headers,
+      body: formData // Toujours FormData depuis EditModal
+    });
+
+    console.log('Response status:', response.status); // Debug log
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Response error:', errorText); // Debug log
+      throw new Error(`Erreur HTTP: ${response.status} - ${errorText}`);
+    }
+
+    const result = await response.json();
+    console.log('Response result:', result); // Debug log
+    
+    if (result.success) {
+      await fetchMarque(); // Recharger les données
+      return { success: true, data: result.data };
     } else {
       throw new Error(result.message || 'Erreur lors de la sauvegarde');
     }

@@ -3,8 +3,7 @@ import { FiEye, FiEdit, FiTrash2 } from 'react-icons/fi';
 import EditModal from './EditModal';
 import DeleteModal from './DeleteModal';
 
-
-const ActionButtons = ({ Documents, onView, onEdit, onCopy, onDelete, onOpenAddModal }) => {
+const ActionButtons = ({ Marque, onView, onEdit, onCopy, onDelete, onOpenAddModal }) => {
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -15,9 +14,9 @@ const ActionButtons = ({ Documents, onView, onEdit, onCopy, onDelete, onOpenAddM
     setCopyModalOpen(true);
   };
 
-  const handleCopySubmit = (copiedDocumentsData) => {
+  const handleCopySubmit = (copiedMarqueData) => {
     if (onCopy) {
-      onCopy(copiedDocumentsData);
+      onCopy(copiedMarqueData);
     }
     setCopyModalOpen(false);
   };
@@ -26,23 +25,23 @@ const ActionButtons = ({ Documents, onView, onEdit, onCopy, onDelete, onOpenAddM
     e.stopPropagation(); // Prevent event propagation
     
     if (onOpenAddModal) {
-      // Open add modal with pre-filled data
-      onOpenAddModal(Documents);
+      onOpenAddModal(Marque);
     } else if (onCopy) {
-      // Fallback to old behavior if onOpenAddModal is not provided
-      onCopy(Documents);
+      onCopy(Marque);
     }
   };
   
-  // Fonction corrigée - ne ferme plus le modal immédiatement
-  const handleSaveEdit = (updatedData) => {
+  // Fonction corrigée pour gérer la sauvegarde avec l'ID
+  const handleSaveEdit = async (marqueId, formData) => {
+    console.log('ActionButtons handleSaveEdit called with:', marqueId, formData);
+    
     if (onEdit) {
-      onEdit(updatedData);
-      // Ne pas fermer le modal ici - le EditModal le fait déjà avec un délai
+      // Passer les données au parent avec l'ID intégré si nécessaire
+      const result = await onEdit(Marque, formData);
+      return result;
     }
   };
 
-  // Fonction pour fermer le modal d'édition
   const handleEditModalClose = () => {
     setEditModalOpen(false);
   };
@@ -74,15 +73,11 @@ const ActionButtons = ({ Documents, onView, onEdit, onCopy, onDelete, onOpenAddM
         </button>
       </div>
       
-    
-      
-    
-      
       {editModalOpen && (
         <EditModal
           isOpen={editModalOpen}
           onClose={handleEditModalClose}
-          Documents={Documents}
+          marque={Marque} 
           onSave={handleSaveEdit}
         />
       )}
@@ -91,9 +86,9 @@ const ActionButtons = ({ Documents, onView, onEdit, onCopy, onDelete, onOpenAddM
         <DeleteModal
           isOpen={deleteModalOpen}
           onClose={() => setDeleteModalOpen(false)}
-          Documents={Documents}
+          Marque={Marque}
           onConfirm={() => {
-            onDelete(Documents.id);
+            onDelete(Marque.id);
             setDeleteModalOpen(false);
           }}
         />
