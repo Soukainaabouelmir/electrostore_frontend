@@ -24,7 +24,6 @@ const MarqueManagement = () => {
     const role = localStorage.getItem("role");
     const token = localStorage.getItem("token");
 
-    // Vérification d'authentification
     if (!token || role !== "admin") {
       navigate("/compte"); 
       return;
@@ -49,9 +48,8 @@ const MarqueManagement = () => {
       }
       const result = await response.json();
       
-      console.log('API Response:', result); // Debug log
+      console.log('API Response:', result);
 
-      // Si l'API retourne directement un tableau
       if (Array.isArray(result)) {
         const simpleMarques = result.map(marque => ({
           id: marque.id,
@@ -62,13 +60,10 @@ const MarqueManagement = () => {
           status: marque.status || 'active',
         }));
 
-        console.log('Transformed marques:', simpleMarques);
         setMarque(simpleMarques);
         setFilteredMarque(simpleMarques);
       }
-      // Si l'API retourne un objet avec success et data
       else if (result.success) {
-        // Transformation des données pour une structure simple (sans hiérarchie)
         const simpleMarques = result.data.map(marque => ({
           id: marque.id,
           nom: marque.nom,
@@ -78,8 +73,6 @@ const MarqueManagement = () => {
           status: marque.status || 'active',
           dateCreation: marque.created_at || new Date().toISOString().split('T')[0]
         }));
-
-        console.log('Transformed marques:', simpleMarques); // Debug log
         
         setMarque(simpleMarques);
         setFilteredMarque(simpleMarques);
@@ -90,46 +83,30 @@ const MarqueManagement = () => {
       console.error('Erreur lors de la récupération des marques:', err);
       setError(err.message);
       
-      // Données de test avec la nouvelle structure
-      const mockMarques = [
-        {
-          id: 1,
-          nom: 'Nike',
-          description: 'Marque de sport et équipements sportifs',
-          logo: 'https://logo.clearbit.com/nike.com',
-          site: 'https://www.nike.com',
-          status: 'active',
-          dateCreation: '2024-01-15'
-        },
-        {
-          id: 2,
-          nom: 'Adidas',
-          description: 'Équipements sportifs et vêtements de sport',
-          logo: 'https://logo.clearbit.com/adidas.com',
-          site: 'https://www.adidas.com',
-          status: 'active',
-          dateCreation: '2024-01-16'
-        },
-        {
-          id: 3,
-          nom: 'Apple',
-          description: 'Technologie et électronique grand public',
-          logo: 'https://logo.clearbit.com/apple.com',
-          site: 'https://www.apple.com',
-          status: 'active',
-          dateCreation: '2024-01-17'
-        }
-      ];
-      
-      setMarque(mockMarques);
-      setFilteredMarque(mockMarques);
+      // NE PAS utiliser les données mockées en cas d'erreur réelle
+      // Seulement pour le développement
+      if (process.env.NODE_ENV === 'development') {
+        const mockMarques = [
+          {
+            id: 1,
+            nom: 'Nike',
+            description: 'Marque de sport et équipements sportifs',
+            logo: 'https://logo.clearbit.com/nike.com',
+            site: 'https://www.nike.com',
+            status: 'active',
+            dateCreation: '2024-01-15'
+          }
+        ];
+        
+        setMarque(mockMarques);
+        setFilteredMarque(mockMarques);
+      }
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    // Vérification d'authentification avant de charger les données
     const role = localStorage.getItem("role");
     const token = localStorage.getItem("token");
 
@@ -141,7 +118,6 @@ const MarqueManagement = () => {
     setIsDarkMode(savedTheme);
   }, []);
 
-  // Effet pour filtrer les marques selon le terme de recherche
   useEffect(() => {
     if (!searchTerm.trim()) {
       setFilteredMarque(Marque);
@@ -153,10 +129,9 @@ const MarqueManagement = () => {
       );
       setFilteredMarque(filtered);
     }
-    setCurrentPage(1); // Revenir à la première page lors de la recherche
+    setCurrentPage(1);
   }, [searchTerm, Marque]);
 
-  // Effet pour la pagination
   useEffect(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -172,167 +147,30 @@ const MarqueManagement = () => {
     setCurrentPage(1); 
   };
 
-  // Dans MarqueManagement.js - Modifier la fonction savemarques
-
-// Ajoutez cette fonction dans votre MarqueManagement.js
-
-// Fonction pour gérer l'édition depuis ActionButtons
-// Dans MarqueManagement.js - Corrections des fonctions de sauvegarde
-
-// 1. Correction de l'URL dans handleEditFromActionButtons
-const handleEditFromActionButtons = async (marque, formData) => {
-  console.log('handleEditFromActionButtons called with:', marque, formData);
-  
-  try {
-    // CORRECTION: Suppression du double '/api' dans l'URL
-    const url = `${API_BASE_URL}/admin/marques/edit/${marque.id}`;
+  const handleEditFromActionButtons = async (marque, formData) => {
+    console.log('handleEditFromActionButtons called with:', marque, formData);
     
-    const headers = {
-      'Accept': 'application/json',
-    };
-    
-    // Si c'est FormData, ne pas ajouter Content-Type
-    const isFormData = formData instanceof FormData;
-    if (!isFormData) {
-      headers['Content-Type'] = 'application/json';
-    }
-    
-    const response = await fetch(url, {
-      method: 'PUT',
-      headers: headers,
-      body: isFormData ? formData : JSON.stringify(formData)
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Erreur HTTP: ${response.status} - ${errorText}`);
-    }
-
-    const result = await response.json();
-    
-    if (result.success) {
-      await fetchMarque(); // Recharger les données
-      return { success: true };
-    } else {
-      throw new Error(result.message || 'Erreur lors de la sauvegarde');
-    }
-  } catch (err) {
-    console.error('Erreur lors de la sauvegarde:', err);
-    setError(err.message);
-    return { success: false, error: err.message };
-  }
-};
-
-// 2. Correction de la fonction savemarques
-const savemarques = async (marquesData, marqueId = null) => {
-  try {
-    // Si on a un ID spécifique, c'est une modification
-    const isEditing = marqueId || editingmarques;
-    const finalId = marqueId || (editingmarques ? editingmarques.id : null);
-    
-    // CORRECTION: URL corrigée (sans double /api)
-    const url = isEditing 
-      ? `${API_BASE_URL}/admin/marques/edit/${finalId}`
-      : `${API_BASE_URL}/admin/marques/store`;
-    
-    const method = isEditing ? 'PUT' : 'POST';
-    
-    const isFormData = marquesData instanceof FormData;
-    
-    const headers = {
-      'Accept': 'application/json',
-    };
-    
-    if (!isFormData) {
-      headers['Content-Type'] = 'application/json';
-    }
-    
-    console.log('Sending request to:', url); // Debug log
-    console.log('Method:', method); // Debug log
-    console.log('IsFormData:', isFormData); // Debug log
-    
-    const response = await fetch(url, {
-      method: method,
-      headers: headers,
-      body: isFormData ? marquesData : JSON.stringify(marquesData)
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Response error:', errorText); // Debug log
-      throw new Error(`Erreur HTTP: ${response.status} - ${errorText}`);
-    }
-
-    const result = await response.json();
-    console.log('Response result:', result); // Debug log
-    
-    if (result.success) {
-      await fetchMarque();
-      return { success: true };
-    } else {
-      throw new Error(result.message || 'Erreur lors de la sauvegarde');
-    }
-  } catch (err) {
-    console.error('Erreur lors de la sauvegarde:', err);
-    setError(err.message);
-    return { success: false, error: err.message };
-  }
-};
-
-// 3. Ajout d'une fonction spécifique pour l'édition depuis EditModal
-const handleEditFromModal = async (marqueId, formData) => {
-  console.log('handleEditFromModal called with ID:', marqueId, 'FormData:', formData);
-  
-  try {
-    const url = `${API_BASE_URL}/admin/marques/edit/${marqueId}`;
-    
-    const headers = {
-      'Accept': 'application/json',
-    };
-    
-    // FormData n'a pas besoin de Content-Type (le navigateur l'ajoute automatiquement)
-    const response = await fetch(url, {
-      method: 'PUT',
-      headers: headers,
-      body: formData // Toujours FormData depuis EditModal
-    });
-
-    console.log('Response status:', response.status); // Debug log
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Response error:', errorText); // Debug log
-      throw new Error(`Erreur HTTP: ${response.status} - ${errorText}`);
-    }
-
-    const result = await response.json();
-    console.log('Response result:', result); // Debug log
-    
-    if (result.success) {
-      await fetchMarque(); // Recharger les données
-      return { success: true, data: result.data };
-    } else {
-      throw new Error(result.message || 'Erreur lors de la sauvegarde');
-    }
-  } catch (err) {
-    console.error('Erreur lors de la sauvegarde:', err);
-    setError(err.message);
-    return { success: false, error: err.message };
-  }
-};
-
-  const deletemarques = async (marquesId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/marques/${marquesId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+      const url = `${API_BASE_URL}/admin/marques/edit/${marque.id}`;
+      
+      const headers = {
+        'Accept': 'application/json',
+      };
+      
+      const isFormData = formData instanceof FormData;
+      if (!isFormData) {
+        headers['Content-Type'] = 'application/json';
+      }
+      
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: headers,
+        body: isFormData ? formData : JSON.stringify(formData)
       });
 
       if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`Erreur HTTP: ${response.status} - ${errorText}`);
       }
 
       const result = await response.json();
@@ -341,11 +179,92 @@ const handleEditFromModal = async (marqueId, formData) => {
         await fetchMarque();
         return { success: true };
       } else {
+        throw new Error(result.message || 'Erreur lors de la sauvegarde');
+      }
+    } catch (err) {
+      console.error('Erreur lors de la sauvegarde:', err);
+      setError(err.message);
+      return { success: false, error: err.message };
+    }
+  };
+
+  const savemarques = async (marquesData, marqueId = null) => {
+    try {
+      const isEditing = marqueId || editingmarques;
+      const finalId = marqueId || (editingmarques ? editingmarques.id : null);
+      
+      const url = isEditing 
+        ? `${API_BASE_URL}/admin/marques/edit/${finalId}`
+        : `${API_BASE_URL}/admin/marques/store`;
+      
+      const method = isEditing ? 'PUT' : 'POST';
+      
+      const isFormData = marquesData instanceof FormData;
+      
+      const headers = {
+        'Accept': 'application/json',
+      };
+      
+      if (!isFormData) {
+        headers['Content-Type'] = 'application/json';
+      }
+      
+      const response = await fetch(url, {
+        method: method,
+        headers: headers,
+        body: isFormData ? marquesData : JSON.stringify(marquesData)
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Erreur HTTP: ${response.status} - ${errorText}`);
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        await fetchMarque();
+        return { success: true };
+      } else {
+        throw new Error(result.message || 'Erreur lors de la sauvegarde');
+      }
+    } catch (err) {
+      console.error('Erreur lors de la sauvegarde:', err);
+      setError(err.message);
+      return { success: false, error: err.message };
+    }
+  };
+
+  // CORRECTION PRINCIPALE : Fonction de suppression améliorée
+  const deletemarques = async (marquesId) => {
+    try {
+      setError(null); // Réinitialiser l'erreur avant la suppression
+      
+      const response = await fetch(`${API_BASE_URL}/admin/marques/delete/${marquesId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Erreur HTTP: ${response.status} - ${errorText}`);
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        // Recharger les données sans afficher d'erreur
+        await fetchMarque();
+        return { success: true };
+      } else {
         throw new Error(result.message || 'Erreur lors de la suppression');
       }
     } catch (err) {
       console.error('Erreur lors de la suppression:', err);
-      setError(err.message);
+     
       return { success: false, error: err.message };
     }
   };
@@ -362,9 +281,13 @@ const handleEditFromModal = async (marqueId, formData) => {
 
   const handleDeletemarques = async (marques) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer cette marque ?')) {
+      setError(null); 
+      
       const result = await deletemarques(marques.id);
       if (!result.success) {
         alert('Erreur lors de la suppression de la marque: ' + result.error);
+      } else {
+        console.log('Marque supprimée avec succès');
       }
     }
   };
@@ -382,9 +305,11 @@ const handleEditFromModal = async (marqueId, formData) => {
   const handleCloseModal = () => {
     setShowModal(false);
     setEditingmarques(null);
+    setError(null); // Réinitialiser les erreurs en fermant le modal
   };
 
   const handleRefresh = () => {
+    setError(null); // Réinitialiser les erreurs au rafraîchissement
     fetchMarque();
   };
 
@@ -393,7 +318,7 @@ const handleEditFromModal = async (marqueId, formData) => {
   const token = localStorage.getItem("token");
 
   if (!token || role !== "admin") {
-    return null; // Le useEffect va rediriger
+    return null;
   }
 
   if (loading) {
@@ -412,6 +337,7 @@ const handleEditFromModal = async (marqueId, formData) => {
       <div className="max-w-full mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           
+          {/* Afficher l'erreur seulement si elle n'est pas liée à une suppression */}
           {error && (
             <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
               <strong className="font-bold">Erreur: </strong>
@@ -426,7 +352,6 @@ const handleEditFromModal = async (marqueId, formData) => {
             </div>
           )}
           
-          {/* Header avec recherche et filtres */}
           <SearchAndFilterMarque 
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
@@ -438,7 +363,6 @@ const handleEditFromModal = async (marqueId, formData) => {
             filteredCount={filteredMarque.length}
           />
 
-          {/* Tableau des marques */}
           <TableMarque
             Marque={currentPageMarque}
             onEdit={handleEditmarques}
@@ -446,7 +370,6 @@ const handleEditFromModal = async (marqueId, formData) => {
             searchTerm={searchTerm}
           />
 
-          {/* Pagination */}
           <Pagination
             totalItems={filteredMarque.length}
             itemsPerPage={itemsPerPage}
@@ -455,7 +378,6 @@ const handleEditFromModal = async (marqueId, formData) => {
             onItemsPerPageChange={handleItemsPerPageChange}
           />
 
-          {/* Modal pour ajout/modification */}
           {showModal && (
             <MarqueModal
               marques={editingmarques}
