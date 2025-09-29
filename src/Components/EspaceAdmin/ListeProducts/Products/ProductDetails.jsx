@@ -69,7 +69,6 @@ const ProductDetails = ({ product, onBack }) => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
-      {/* Header */}
       <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -102,10 +101,8 @@ const ProductDetails = ({ product, onBack }) => {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Product Image */}
           <div className="space-y-6">
             <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-8 aspect-square flex items-center justify-center">
               {imageUrl ? (
@@ -132,8 +129,6 @@ const ProductDetails = ({ product, onBack }) => {
                 </div>
               )}
             </div>
-
-            {/* Status Cards */}
             <div className="grid grid-cols-2 gap-4">
               <div className={`p-4 rounded-xl border ${
                 isInStock 
@@ -144,7 +139,8 @@ const ProductDetails = ({ product, onBack }) => {
                   <div className={`w-3 h-3 rounded-full ${isInStock ? 'bg-green-500' : 'bg-red-500'}`}></div>
                   <div>
                     <p className={`font-semibold text-sm ${isInStock ? 'text-green-800 dark:text-green-300' : 'text-red-800 dark:text-red-300'}`}>
-                      {isInStock ? 'Disponible' : 'Rupture de stock'}
+                      {isInStock ? `Disponible (${product.quantity})` : 'Rupture de stock'}
+
                     </p>
                     {product.disponibilite && (
                       <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{product.disponibilite}</p>
@@ -171,7 +167,6 @@ const ProductDetails = ({ product, onBack }) => {
 
           <div className="space-y-8">
             <div className="space-y-4">
-           
                 {product.marque && (
                   <div className="inline-flex items-center px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 rounded-full text-sm font-medium">
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

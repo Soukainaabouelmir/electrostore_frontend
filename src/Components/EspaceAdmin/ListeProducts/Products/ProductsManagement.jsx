@@ -70,6 +70,7 @@ const ProductsManagement = () => {
           categorie: products.categorie || "",
           sous_categorie: products.sous_categorie || "",
           in_stock: products.in_stock || "",
+          quantity: products.quantity || "",
           garantie: products.garantie || "",
         }));
 

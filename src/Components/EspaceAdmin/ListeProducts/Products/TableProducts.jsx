@@ -140,23 +140,23 @@ const TableProducts = ({ Products, onEdit, onDelete, onToggleStock, loading = fa
         </div>
 
         {/* Statut visuel */}
-        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
-          isInStock 
-            ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' 
-            : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
-        }`}>
-          <span className={`w-2 h-2 rounded-full mr-1.5 ${
-            isInStock ? 'bg-green-400' : 'bg-red-400'
-          }`}></span>
-          {isInStock ? 'Disponible' : 'Indisponible'}
-        </span>
+      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
+  isInStock 
+    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' 
+    : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+}`}>
+  <span className={`w-2 h-2 rounded-full mr-1.5 ${
+    isInStock ? 'bg-green-400' : 'bg-red-400'
+  }`}></span>
+  {isInStock ? `Disponible (${product.quantity})` : 'Indisponible'}
+</span>
 
-        {/* Informations supplémentaires */}
-        {product.disponibilite && (
-          <div className="text-xs text-gray-600 dark:text-gray-400">
-            {product.disponibilite}
-          </div>
-        )}
+{/* Informations supplémentaires */}
+{product.disponibilite && (
+  <div className="text-xs text-gray-600 dark:text-gray-400">
+    {product.disponibilite}
+  </div>
+)}
         {product.garantie && (
           <div className="text-xs text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 px-2 py-1 rounded">
             🛡️ {product.garantie}

@@ -1,12 +1,103 @@
 import React, { useState, useEffect } from 'react';
-import { XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, PhotoIcon, PlusIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 
+// Premier modal pour choisir l'action
+const ActionChoiceModal = ({ isOpen, onClose, onAddProduct, onImportProducts }) => {
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div 
+      className="fixed inset-0 bg-gray-900 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4"
+      onClick={handleBackdropClick}
+    >
+      <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+            Gestion des produits
+          </h3>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          >
+            <XMarkIcon className="h-6 w-6" />
+          </button>
+        </div>
+
+        {/* Options */}
+        <div className="p-6">
+          <div className="grid grid-cols-1 gap-4">
+            {/* Option Ajouter un produit */}
+            <button
+              onClick={onAddProduct}
+              className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                  <PlusIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div className="text-left">
+                  <h4 className="font-medium text-gray-900 dark:text-white">
+                    Ajouter un produit
+                  </h4>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Créer un nouveau produit manuellement
+                  </p>
+                </div>
+              </div>
+            </button>
+
+            {/* Option Importer les produits */}
+            <button
+              onClick={onImportProducts}
+              className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              <div className="flex  items-center space-x-3">
+                <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+                  <ArrowUpTrayIcon className="h-6 w-6 text-green-600 dark:text-green-400" />
+                </div>
+                <div className="text-left">
+                  <h4 className="font-medium text-gray-900 dark:text-white">
+                    Importer les produits
+                  </h4>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Importer plusieurs produits via un fichier Excel
+                  </p>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-end p-6 border-t border-gray-200 dark:border-gray-700">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:text-gray-300 dark:border-gray-500 dark:hover:bg-gray-800"
+          >
+            Fermer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Modal principal pour ajouter/modifier les produits (ton code original)
 const ProductsModal = ({ marques, onSave, onClose, isOpen }) => {
   const [formData, setFormData] = useState({
     nom: '',
     description: '',
     site: '',
-    logo: null, // Changé pour stocker le fichier
+    logo: null,
     status: 'active'
   });
   
@@ -21,12 +112,11 @@ const ProductsModal = ({ marques, onSave, onClose, isOpen }) => {
         nom: marques.nom || '',
         description: marques.description || '',
         site: marques.site || '',
-        logo: null, // Réinitialiser le fichier
+        logo: null,
         status: marques.status || 'active'
       });
       setLogoPreview(marques.logo || '');
     } else {
-      // Réinitialiser pour un nouvel ajout
       setFormData({
         nom: '',
         description: '',
@@ -49,7 +139,6 @@ const ProductsModal = ({ marques, onSave, onClose, isOpen }) => {
         [name]: file
       }));
       
-      // Créer une prévisualisation
       if (file) {
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -65,7 +154,6 @@ const ProductsModal = ({ marques, onSave, onClose, isOpen }) => {
         [name]: value
       }));
       
-      // Supprimer l'erreur du champ quand l'utilisateur commence à taper
       if (errors[name]) {
         setErrors(prev => ({
           ...prev,
@@ -99,40 +187,36 @@ const ProductsModal = ({ marques, onSave, onClose, isOpen }) => {
     }
   };
 
-  // Dans ProductsModal.js - Modifier la fonction handleSubmit
-
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  
-  if (!validateForm()) {
-    return;
-  }
-
-  setIsLoading(true);
-
-  try {
-    // Créer FormData pour gérer les fichiers
-    const submitData = new FormData();
-    submitData.append('nom', formData.nom);
-    submitData.append('description', formData.description || '');
-    submitData.append('site', formData.site || '');
-    submitData.append('status', formData.status);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     
-    // Ajouter le fichier logo s'il existe
-    if (formData.logo) {
-      submitData.append('logo', formData.logo);
+    if (!validateForm()) {
+      return;
     }
 
-    const result = await onSave(submitData);
-    if (result && result.success) {
-      onClose();
+    setIsLoading(true);
+
+    try {
+      const submitData = new FormData();
+      submitData.append('nom', formData.nom);
+      submitData.append('description', formData.description || '');
+      submitData.append('site', formData.site || '');
+      submitData.append('status', formData.status);
+      
+      if (formData.logo) {
+        submitData.append('logo', formData.logo);
+      }
+
+      const result = await onSave(submitData);
+      if (result && result.success) {
+        onClose();
+      }
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error('Erreur lors de la sauvegarde:', error);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   const handleClose = () => {
     if (!isLoading) {
@@ -214,9 +298,6 @@ const handleSubmit = async (e) => {
             </div>
           </div>
 
-          {/* Description */}
-        
-
           {/* Site Web et Logo sur la même ligne */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             {/* Site Web */}
@@ -263,7 +344,6 @@ const handleSubmit = async (e) => {
             </div>
           </div>
 
-
           {/* Prévisualisation du logo */}
           {logoPreview && (
             <div className="mb-6 flex items-center space-x-3">
@@ -284,7 +364,8 @@ const handleSubmit = async (e) => {
               </div>
             </div>
           )}
-            <div className="mb-4">
+
+          <div className="mb-4">
             <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Description
             </label>
@@ -334,4 +415,150 @@ const handleSubmit = async (e) => {
   );
 };
 
-export default ProductsModal;
+// Composant principal qui gère les deux modals
+const ProductsModalManager = ({ marques, onSave, onClose, isOpen }) => {
+  const [currentModal, setCurrentModal] = useState('choice'); // 'choice', 'add', 'import'
+  const [showImportModal, setShowImportModal] = useState(false);
+
+  // Réinitialiser quand le modal se ferme
+  useEffect(() => {
+    if (!isOpen) {
+      setCurrentModal('choice');
+      setShowImportModal(false);
+    }
+  }, [isOpen]);
+
+  const handleAddProduct = () => {
+    setCurrentModal('add');
+  };
+
+  const handleImportProducts = () => {
+    setCurrentModal('import');
+    setShowImportModal(true);
+  };
+
+  const handleCloseImportModal = () => {
+    setShowImportModal(false);
+    setCurrentModal('choice');
+  };
+
+  const handleCloseAll = () => {
+    setCurrentModal('choice');
+    onClose();
+  };
+
+  const handleSaveProduct = async (data) => {
+    const result = await onSave(data);
+    if (result && result.success) {
+      setCurrentModal('choice');
+    }
+    return result;
+  };
+
+  // Modal d'import (à personnaliser selon tes besoins)
+  const ImportModal = ({ isOpen, onClose, onImport }) => {
+    const [file, setFile] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleFileChange = (e) => {
+      setFile(e.target.files[0]);
+    };
+
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      if (!file) return;
+
+      setIsLoading(true);
+      // Ici tu peux implémenter la logique d'import
+      console.log('Fichier à importer:', file);
+      
+      // Simulation d'import
+      setTimeout(() => {
+        setIsLoading(false);
+        alert('Import terminé avec succès!');
+        onClose();
+      }, 2000);
+    };
+
+    if (!isOpen) return null;
+
+    return (
+      <div className="fixed inset-0 bg-gray-900 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+        <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full">
+          <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+              Importer les produits
+            </h3>
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            >
+              <XMarkIcon className="h-6 w-6" />
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit} className="p-6">
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Fichier à importer
+              </label>
+              <input
+                type="file"
+                accept=".csv,.xlsx,.xls"
+                onChange={handleFileChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white dark:border-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                Formats supportés: CSV, Excel
+              </p>
+            </div>
+
+            <div className="flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:text-gray-300 dark:border-gray-500 dark:hover:bg-gray-800"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                disabled={!file || isLoading}
+                className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50"
+              >
+                {isLoading ? 'Import...' : 'Importer'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <>
+      <ActionChoiceModal
+        isOpen={isOpen && currentModal === 'choice'}
+        onClose={handleCloseAll}
+        onAddProduct={handleAddProduct}
+        onImportProducts={handleImportProducts}
+      />
+      
+      <ProductsModal
+        marques={marques}
+        onSave={handleSaveProduct}
+        onClose={() => setCurrentModal('choice')}
+        isOpen={isOpen && currentModal === 'add'}
+      />
+      
+      <ImportModal
+        isOpen={isOpen && currentModal === 'import'}
+        onClose={handleCloseImportModal}
+        onImport={handleImportProducts}
+      />
+    </>
+  );
+};
+
+export default ProductsModalManager;

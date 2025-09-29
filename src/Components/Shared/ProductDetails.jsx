@@ -333,7 +333,6 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
               {[
                 { id: 'specs', label: 'Spécifications', icon: FiCpu },
                 { id: 'description', label: 'Description', icon: FiMonitor },
-                { id: 'compatibility', label: 'Jeux compatibles', icon: FiZap },
               ].map(({ id, label, icon: Icon }) => (
                 <button
                   key={id}
@@ -386,24 +385,6 @@ Avec 32 GB de RAM DDR5 et un SSD NVMe de 1TB, les temps de chargement sont rédu
                   >
                     {showFullDescription ? 'Voir moins' : 'Voir plus'}
                   </button>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'compatibility' && (
-              <div className="bg-white dark:bg-[#1e1e1e] rounded-lg p-6 shadow-sm">
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-                  Jeux compatibles
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {product.compatibleGames.map((game, index) => (
-                    <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                      <FiCheck className="w-5 h-5 text-green-500" />
-                      <span className="text-gray-700 dark:text-gray-300 font-medium">
-                        {game}
-                      </span>
-                    </div>
-                  ))}
                 </div>
               </div>
             )}
