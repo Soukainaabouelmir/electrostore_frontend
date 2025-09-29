@@ -4,6 +4,7 @@ import ProductDetails from "./ProductDetails";
 
 const TableProducts = ({ Products, onEdit, onDelete, onToggleStock, loading = false, error = null }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [viewMode, setViewMode] = useState('table');
   
   const getImageUrl = (logoPath) => {
     if (!logoPath) return null;
@@ -17,14 +18,26 @@ const TableProducts = ({ Products, onEdit, onDelete, onToggleStock, loading = fa
   };
 
   // Handler pour ouvrir les détails du produit
-  const handleRowClick = (product, e) => {
-    // Ne pas ouvrir les détails si on clique sur un bouton d'action ou le toggle
+ const handleRowClick = (product, e) => {
     if (e.target.closest('button') || e.target.closest('.stock-toggle-container')) {
       return;
     }
     setSelectedProduct(product);
+    setViewMode('detail'); // Passer en mode détail
   };
 
+   const handleBackToTable = () => {
+    setViewMode('table');
+    setSelectedProduct(null);
+  };
+  if (viewMode === 'detail' && selectedProduct) {
+    return (
+      <ProductDetails
+        product={selectedProduct} 
+        onBack={handleBackToTable}
+      />
+    );
+  }
   // Handler pour fermer les détails
   const handleCloseDetails = () => {
     setSelectedProduct(null);
@@ -153,7 +166,6 @@ const TableProducts = ({ Products, onEdit, onDelete, onToggleStock, loading = fa
     );
   };
 
-  // État de chargement
   if (loading) {
     return (
       <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-hidden border border-gray-200 dark:border-gray-900">
@@ -179,7 +191,6 @@ const TableProducts = ({ Products, onEdit, onDelete, onToggleStock, loading = fa
     );
   }
 
-  // État d'erreur
   if (error) {
     return (
       <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-hidden border border-red-200 dark:border-red-700">
@@ -208,7 +219,6 @@ const TableProducts = ({ Products, onEdit, onDelete, onToggleStock, loading = fa
   return (
     <>
       <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-hidden border border-gray-200 dark:border-gray-900">
-        {/* En-tête de la table */}
         <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-600 px-6 py-2 border-b border-gray-200 dark:border-gray-600">
           <div className="flex items-center justify-between">
             <div>
@@ -231,7 +241,6 @@ const TableProducts = ({ Products, onEdit, onDelete, onToggleStock, loading = fa
           </div>
         </div>
 
-        {/* Conteneur de la table avec scrolling personnalisé */}
         <div className="overflow-x-auto custom-scrollbar">
           <style jsx>{`
             .custom-scrollbar::-webkit-scrollbar {
@@ -502,12 +511,7 @@ const TableProducts = ({ Products, onEdit, onDelete, onToggleStock, loading = fa
       </div>
 
       {/* Modal de détails du produit */}
-      {selectedProduct && (
-        <ProductDetails 
-          product={selectedProduct} 
-          onClose={handleCloseDetails}
-        />
-      )}
+     
     </>
   );
 };
