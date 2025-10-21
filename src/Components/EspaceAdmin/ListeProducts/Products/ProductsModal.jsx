@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { XMarkIcon, PhotoIcon, PlusIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 
-// Premier modal pour choisir l'action
+
 const ActionChoiceModal = ({ isOpen, onClose, onAddProduct, onImportProducts }) => {
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -10,14 +10,12 @@ const ActionChoiceModal = ({ isOpen, onClose, onAddProduct, onImportProducts }) 
   };
 
   if (!isOpen) return null;
-
   return (
     <div 
       className="fixed inset-0 bg-gray-900 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4"
       onClick={handleBackdropClick}
     >
       <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white">
             Gestion des produits
@@ -31,10 +29,8 @@ const ActionChoiceModal = ({ isOpen, onClose, onAddProduct, onImportProducts }) 
           </button>
         </div>
 
-        {/* Options */}
         <div className="p-6">
           <div className="grid grid-cols-1 gap-4">
-            {/* Option Ajouter un produit */}
             <button
               onClick={onAddProduct}
               className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -54,7 +50,6 @@ const ActionChoiceModal = ({ isOpen, onClose, onAddProduct, onImportProducts }) 
               </div>
             </button>
 
-            {/* Option Importer les produits */}
             <button
               onClick={onImportProducts}
               className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -76,7 +71,6 @@ const ActionChoiceModal = ({ isOpen, onClose, onAddProduct, onImportProducts }) 
           </div>
         </div>
 
-        {/* Footer */}
         <div className="flex justify-end p-6 border-t border-gray-200 dark:border-gray-700">
           <button
             type="button"
@@ -91,7 +85,6 @@ const ActionChoiceModal = ({ isOpen, onClose, onAddProduct, onImportProducts }) 
   );
 };
 
-// Modal principal pour ajouter/modifier les produits (ton code original)
 const ProductsModal = ({ marques, onSave, onClose, isOpen }) => {
   const [formData, setFormData] = useState({
     nom: '',
@@ -105,7 +98,6 @@ const ProductsModal = ({ marques, onSave, onClose, isOpen }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [logoPreview, setLogoPreview] = useState('');
 
-  // Initialiser le formulaire quand on édite une marque
   useEffect(() => {
     if (marques) {
       setFormData({
@@ -238,7 +230,6 @@ const ProductsModal = ({ marques, onSave, onClose, isOpen }) => {
       onClick={handleBackdropClick}
     >
       <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white">
             {marques ? 'Modifier la marque' : 'Ajouter une nouvelle marque'}
@@ -253,11 +244,8 @@ const ProductsModal = ({ marques, onSave, onClose, isOpen }) => {
           </button>
         </div>
 
-        {/* Formulaire */}
         <form onSubmit={handleSubmit} className="p-6">
-          {/* Nom de la marque et Statut sur la même ligne */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            {/* Nom de la marque */}
             <div>
               <label htmlFor="nom" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Nom de la marque <span className="text-red-500">*</span>
@@ -279,7 +267,6 @@ const ProductsModal = ({ marques, onSave, onClose, isOpen }) => {
               )}
             </div>
 
-            {/* Statut */}
             <div>
               <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Statut
@@ -298,9 +285,7 @@ const ProductsModal = ({ marques, onSave, onClose, isOpen }) => {
             </div>
           </div>
 
-          {/* Site Web et Logo sur la même ligne */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            {/* Site Web */}
             <div>
               <label htmlFor="site" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Site Web
@@ -322,7 +307,6 @@ const ProductsModal = ({ marques, onSave, onClose, isOpen }) => {
               )}
             </div>
 
-            {/* Logo File */}
             <div>
               <label htmlFor="logo" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Logo (Fichier)
@@ -344,7 +328,6 @@ const ProductsModal = ({ marques, onSave, onClose, isOpen }) => {
             </div>
           </div>
 
-          {/* Prévisualisation du logo */}
           {logoPreview && (
             <div className="mb-6 flex items-center space-x-3">
               <span className="text-sm text-gray-600 dark:text-gray-400">Aperçu:</span>
@@ -415,12 +398,10 @@ const ProductsModal = ({ marques, onSave, onClose, isOpen }) => {
   );
 };
 
-// Composant principal qui gère les deux modals
 const ProductsModalManager = ({ marques, onSave, onClose, isOpen }) => {
-  const [currentModal, setCurrentModal] = useState('choice'); // 'choice', 'add', 'import'
+  const [currentModal, setCurrentModal] = useState('choice'); 
   const [showImportModal, setShowImportModal] = useState(false);
 
-  // Réinitialiser quand le modal se ferme
   useEffect(() => {
     if (!isOpen) {
       setCurrentModal('choice');
@@ -455,7 +436,6 @@ const ProductsModalManager = ({ marques, onSave, onClose, isOpen }) => {
     return result;
   };
 
-  // Modal d'import (à personnaliser selon tes besoins)
   const ImportModal = ({ isOpen, onClose, onImport }) => {
     const [file, setFile] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -469,10 +449,8 @@ const ProductsModalManager = ({ marques, onSave, onClose, isOpen }) => {
       if (!file) return;
 
       setIsLoading(true);
-      // Ici tu peux implémenter la logique d'import
       console.log('Fichier à importer:', file);
       
-      // Simulation d'import
       setTimeout(() => {
         setIsLoading(false);
         alert('Import terminé avec succès!');
@@ -528,6 +506,7 @@ const ProductsModalManager = ({ marques, onSave, onClose, isOpen }) => {
                 className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50"
               >
                 {isLoading ? 'Import...' : 'Importer'}
+
               </button>
             </div>
           </form>

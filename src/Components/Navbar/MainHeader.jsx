@@ -102,7 +102,6 @@ const MainHeader = () => {
               <span className="text-3xl font-bold text-orange-500 dark:text-orange-400 transition-all duration-300 group-hover:scale-110">Shop</span>
               <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-900 to-orange-500 transition-all duration-300 group-hover:w-full"></div>
             </div> */}
-            <img src='/ekgamerlogo.png' alt="EK Gamer Logo" />
           </div>
           
           {/* Barre de recherche */}
