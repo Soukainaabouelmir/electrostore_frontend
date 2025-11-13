@@ -46,7 +46,7 @@ const PcGamerList = ({ products = [], onProductSelect }) => {
   
   return (
     <div>
-      <div className="grid grid-cols-2 md:grid-cols-2 px-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-2 px-3 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
         {currentProducts.map(product => (
           <PcGamerCard 
             key={product.id} 

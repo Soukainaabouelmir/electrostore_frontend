@@ -6,6 +6,7 @@ import {
   FiLayers ,
   FiSettings,
   FiChevronDown,
+  FiSquare,
   
 } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,7 +16,6 @@ const SidebarMenu = ({ isCollapsed, activeDropdown, toggleDropdown }) => {
   const location = useLocation();
   const { t } = useLanguage();
 
-  // Configuration des éléments du menu avec traductions
   const menuItems = [ 
     // {
      
@@ -37,7 +37,11 @@ const SidebarMenu = ({ isCollapsed, activeDropdown, toggleDropdown }) => {
     
       ]
     },
-
+{
+      title: t("Pop-ups"),
+      icon: <FiSquare />,
+      path: "/admin/pop_ups"
+    },
     {
       title: "Commandes",
       path: "/admin/commandes" ,

@@ -97,11 +97,11 @@ const MainHeader = () => {
         <div className="container mx-auto flex flex-col lg:flex-row items-center justify-between gap-4">
           {/* Logo */}
           <div className="flex items-center group cursor-pointer" onClick={() => navigate('/')}>
-            {/* <div className="relative">
+            <div className="relative">
               <span className="text-3xl font-bold text-blue-900 dark:text-blue-400 transition-all duration-300 group-hover:scale-110">PC</span>
               <span className="text-3xl font-bold text-orange-500 dark:text-orange-400 transition-all duration-300 group-hover:scale-110">Shop</span>
               <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-900 to-orange-500 transition-all duration-300 group-hover:w-full"></div>
-            </div> */}
+            </div>
           </div>
           
           {/* Barre de recherche */}
