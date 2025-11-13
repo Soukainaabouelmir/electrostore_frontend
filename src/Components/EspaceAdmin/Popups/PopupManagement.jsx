@@ -154,7 +154,7 @@ const fetchPopup = async () => {
     console.log('handleEditFromActionButtons called with:', Popup, formData);
     
     try {
-      const url = `${API_BASE_URL}/admin/Popups/edit/${Popup.id}`;
+      const url = `${API_BASE_URL}/admin/popups/edit/${Popup.id}`;
       
       const headers = {
         'Accept': 'application/json',
@@ -197,7 +197,7 @@ const fetchPopup = async () => {
       const finalId = PopupId || (editingPopups ? editingPopups.id : null);
       
       const url = isEditing 
-        ? `${API_BASE_URL}/admin/Popups/edit/${finalId}`
+        ? `${API_BASE_URL}/admin/popups/edit/${finalId}`
         : `${API_BASE_URL}/admin/popups/store`;
       
       const method = isEditing ? 'PUT' : 'POST';
