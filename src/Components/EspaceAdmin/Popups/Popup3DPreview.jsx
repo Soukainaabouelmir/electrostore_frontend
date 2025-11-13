@@ -49,7 +49,7 @@ const Popup3DPreview = ({ isOpen, onClose, Popup }) => {
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center  p-4"
       onClick={onClose}
     >
       <div 
