@@ -84,8 +84,8 @@ const Popup3DPreview = ({ isOpen, onClose, Popup }) => {
           <div className="absolute left-[-50px] top-1/4 w-10 h-10 bg-blue-500 rounded-full opacity-60 blur-md animate-float" style={{ animationDelay: '1s' }} />
           <div className="absolute left-[-20px] bottom-1/3 w-6 h-6 bg-purple-500 rounded-full opacity-40 blur-sm animate-float" style={{ animationDelay: '3s' }} />
 
-          <div
-            className="relative transition-transform duration-100 ease-out w-full max-w-lg md:max-w-3xl" // Limiter la taille du conteneur 3D
+        <div
+            className="relative transition-transform duration-100 ease-out w-full max-w-lg md:max-w-3xl max-h-[85vh]" // Limiter la taille du conteneur 3D en hauteur aussi
             style={{
               transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
               transformStyle: 'preserve-3d',
@@ -93,10 +93,10 @@ const Popup3DPreview = ({ isOpen, onClose, Popup }) => {
           >
 
             {/* Main Popup card - ONLY Image */}
-            <div className="bg-transparent rounded-2xl overflow-hidden transform-gpu w-full">
+            <div className="bg-transparent rounded-2xl overflow-hidden transform-gpu w-full h-full">
               {/* Image section */}
               <div
-                className="relative w-full h-auto max-h-[80vh] overflow-hidden" // Utilisez h-auto et max-h pour la responsivité
+                className="relative w-full h-full flex items-center justify-center"
                 style={{
                   transform: 'translateZ(50px)', // Projection 3D pour l'image
                 }}
@@ -106,7 +106,7 @@ const Popup3DPreview = ({ isOpen, onClose, Popup }) => {
                     src={imageUrl}
                     alt="Popup preview"
                     // object-contain: L'image s'affiche entièrement (avec espace si les proportions ne correspondent pas)
-                    className="w-full h-full object-contain"
+                    className="max-w-full max-h-[100vh] object-contain"
                   />
                 ) : (
                   <div className="w-full h-64 flex items-center justify-center bg-gray-600 rounded-xl">
