@@ -6,7 +6,7 @@ const PopupModal = ({ Popups, onSave, onClose, isOpen }) => {
     titre: '',
     description: '',
     lien: '',
-    image: null, // Changé pour stocker le fichier
+    image: null, // Changé pour s
     is_active: 'active',
     delai:'',
   });
@@ -114,7 +114,6 @@ const handleSubmit = async (e) => {
   setIsLoading(true);
 
   try {
-    // Créer FormData pour gérer les fichiers
     const submitData = new FormData();
     submitData.append('titre', formData.titre);
     submitData.append('description', formData.description || '');
@@ -122,7 +121,6 @@ const handleSubmit = async (e) => {
     submitData.append('is_active', formData.is_active);
     submitData.append('delai', formData.delai || '');
     
-    // Ajouter le fichier image s'il existe
     if (formData.image) {
       submitData.append('image', formData.image);
     }
@@ -154,7 +152,7 @@ const handleSubmit = async (e) => {
 
   return (
     <div 
-      className="fixed inset-0 bg-gray-900 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4"
+      className="fixed  inset-0 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4"
       onClick={handleBackdropClick}
     >
       <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -173,11 +171,8 @@ const handleSubmit = async (e) => {
           </button>
         </div>
 
-        {/* Formulaire */}
         <form onSubmit={handleSubmit} className="p-6">
-          {/* titre de la Popup et Statut sur la même ligne */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            {/* titre de la Popup */}
             <div>
               <label htmlFor="titre" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 titre de la Popup <span className="text-red-500">*</span>
@@ -199,7 +194,6 @@ const handleSubmit = async (e) => {
               )}
             </div>
 
-            {/* Statut */}
             <div>
               <label htmlFor="is_active" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Statut
@@ -218,12 +212,8 @@ const handleSubmit = async (e) => {
             </div>
           </div>
 
-          {/* Description */}
-        
 
-          {/* lien Web et image sur la même ligne */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            {/* lien Web */}
             <div>
               <label htmlFor="lien" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 lien 
@@ -245,7 +235,6 @@ const handleSubmit = async (e) => {
               )}
             </div>
 
-            {/* image File */}
             <div>
               <label htmlFor="image" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 image (Fichier)
@@ -269,7 +258,7 @@ const handleSubmit = async (e) => {
 
 <div className='mb-3'>
               <label htmlFor="lien" className="block text-sm  font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Délai 
+                Délai (ms)
               </label>
               <input
                 type="number"
@@ -280,7 +269,7 @@ const handleSubmit = async (e) => {
                 className={`w-full px-3 py-2 border  rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white dark:border-gray-600 ${
                   errors.delai ? 'border-red-500' : 'border-gray-300'
                 }`}
-                placeholder="https://www.pcshop.com/producst/12345"
+                placeholder="2000"
                 disabled={isLoading}
               />
               {errors.delai && (
@@ -288,7 +277,6 @@ const handleSubmit = async (e) => {
               )}
             </div>
 
-          {/* Prévisualisation du image */}
           {imagePreview && (
             <div className="mb-6  flex items-center space-x-3">
               <span className="text-sm text-gray-600 dark:text-gray-400">Aperçu:</span>
@@ -324,7 +312,6 @@ const handleSubmit = async (e) => {
             />
           </div>
 
-          {/* Boutons */}
           <div className="flex justify-end space-x-3">
             <button
               type="button"
