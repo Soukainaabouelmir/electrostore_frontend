@@ -8,6 +8,7 @@ import {
   FiTool,
   FiMenu,
   FiX,
+  FiSettings,
 } from "react-icons/fi";
 
 const DropdownNav = () => {
@@ -20,9 +21,16 @@ const DropdownNav = () => {
   const location = useLocation();
 
   const navItems = [
+     {
+      title: "Configurateur PC",
+      icon: <FiSettings className="text-orange-400" />,
+      path: "/configuration",
+    },
+
     {
+      
       title: "Ordinateurs",
-      icon: <FiMonitor className="text-blue-400"/>,
+      icon: <FiMonitor className="text-orange-400"/>,
       dropdown: [
         {
           title: "PC Gamer",
@@ -46,9 +54,10 @@ const DropdownNav = () => {
         },
       ],
     },
+   
     {
       title: "Composants",
-      icon: <FiCpu className="text-green-400" />,
+      icon: <FiCpu className="text-orange-400" />,
       dropdown: [
         {
           title: "Processeurs",
@@ -100,7 +109,7 @@ const DropdownNav = () => {
     },
     {
       title: "Périphériques",
-      icon: <FiMenu className="text-purple-400" />,
+      icon: <FiMenu className="text-orange-400" />,
       dropdown: [
         {
           title: "Écrans",
@@ -142,7 +151,7 @@ const DropdownNav = () => {
     },
     {
       title: "Gaming",
-      icon: <FiHeadphones className="text-red-400" />,
+      icon: <FiHeadphones className="text-orange-400" />,
       dropdown: [
         {
           title: "Casques Gaming",
@@ -255,18 +264,30 @@ const DropdownNav = () => {
             <ul className="flex justify-center space-x-1">
               {navItems.map((item, index) => (
                 <li key={index} className="relative group">
-                  <button
-                    onClick={(e) => handleDropdownClick(e, index)}
-                    className="flex items-center px-6 py-4 hover:bg-blue-600 hover:bg-opacity-80 transition-all duration-300 rounded-t-lg group-hover:transform group-hover:scale-105">
-                    <span className="mr-2">{item.icon}</span>
-                    {item.title}
-                    <FiChevronDown
-                      className={`ml-2 transition-transform duration-200 ${
-                        activeDropdown === index ? "rotate-180" : ""
-                      }`} />
-                  </button>
-                  {activeDropdown === index && (
-                    <div className="absolute left-0 w-56 bg-white dark:bg-[#141414] text-gray-800 dark:text-gray-200 shadow-xl rounded-b-lg border-t-2 border-blue-500 z-20 animate-slideIn">
+                  {item.path ? (
+                    <Link
+                      to={item.path}
+                      onClick={handleLinkClick}
+                      className={`flex items-center px-6 py-4 hover:bg-blue-700 hover:bg-opacity-40 transition-all duration-300  group-hover:transform group-hover:scale-80 ${
+                        location.pathname === item.path ? 'bg-blue-700/70' : ''
+                      }`}>
+                      <span className="mr-2">{item.icon}</span>
+                      {item.title}
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={(e) => handleDropdownClick(e, index)}
+                      className="flex items-center px-6 py-4 hover:bg-blue-700 hover:bg-opacity-40 transition-all duration-300  group-hover:transform group-hover:scale-90">
+                      <span className="mr-2">{item.icon}</span>
+                      {item.title}
+                      <FiChevronDown
+                        className={`ml-2 transition-transform duration-200 ${
+                          activeDropdown === index ? "rotate-180" : ""
+                        }`} />
+                    </button>
+                  )}
+                  {activeDropdown === index && item.dropdown && (
+                    <div className="absolute left-0 w-56 bg-white dark:bg-[#141414] text-gray-800 dark:text-gray-200 shadow-xl rounded-b-lg  z-20 animate-slideIn">
                       <div className="py-2">
                         {item.dropdown.map((subItem, subIndex) => (
                           <div key={subIndex} className="relative">
@@ -274,7 +295,7 @@ const DropdownNav = () => {
                               <>
                                 <button
                                   onClick={(e) => handleSubDropdownClick(e, subIndex)}
-                                  className="w-full flex items-center justify-between px-4 py-3 hover:bg-blue-50 dark:hover:bg-gray-900 hover:text-blue-700 dark:hover:text-blue-400 transition-all duration-200 border-l-4 border-transparent hover:border-blue-500">
+                                  className="w-full flex items-center justify-between px-4 py-3 hover:bg-blue-50 dark:hover:bg-gray-900 hover:text-blue-700 dark:hover:text-blue-400 transition-all duration-200  ">
                                   <span>{subItem.title}</span>
                                   <FiChevronDown
                                     className={`ml-2 transition-transform duration-200 ${
@@ -285,7 +306,7 @@ const DropdownNav = () => {
                                   />
                                 </button>
                                 {activeSubDropdown === subIndex && (
-                                  <div className="absolute left-full top-0 w-48 bg-gray-50 dark:bg-[#141414] shadow-lg rounded-lg border-l-2 border-blue-500 z-30">
+                                  <div className="absolute left-full top-0 w-48 bg-white dark:bg-[#141414] shadow-lg   z-30">
                                     <div className="py-2">
                                       {subItem.subDropdown.map(
                                         (nestedItem, nestedIndex) => (
@@ -308,8 +329,8 @@ const DropdownNav = () => {
                               <Link
                                 to={subItem.path}
                                 onClick={handleLinkClick}
-                                className={`block px-4 py-3 hover:bg-blue-50 dark:hover:bg-gray-900 hover:text-blue-700 dark:hover:text-blue-400 transition-all duration-200 border-l-4 border-transparent hover:border-blue-500 ${
-                                  location.pathname === subItem.path ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border-blue-500' : ''
+                                className={`block px-4 py-3 hover:bg-blue-50 dark:hover:bg-gray-900 hover:text-blue-700 dark:hover:text-blue-400 transition-all duration-200  ${
+                                  location.pathname === subItem.path ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 ' : ''
                                 }`}
                               >
                                 {subItem.title}
@@ -352,7 +373,7 @@ const DropdownNav = () => {
           className={`fixed left-0 top-0 h-full w-80 max-w-sm bg-white dark:!bg-[#141414] dark:!text-gray-300 shadow-xl transform transition-transform duration-300 ${
             isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
           }`} >
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between p-4 ">
             <div className="flex items-center">
               <span className="text-2xl font-bold text-blue-900 dark:text-blue-400">
                 PC
@@ -371,22 +392,36 @@ const DropdownNav = () => {
             {navItems.map((item, index) => (
               <div
                 key={index}
-                className="border-b border-gray-100 dark:border-gray-800" >
-                <button
-                  onClick={(e) => handleMobileDropdownClick(e, index)}
-                  className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 dark:hover:bg-[#1e1e1e] transition-colors" >
-                  <div className="flex items-center space-x-3">
-                    {item.icon}
-                    <span className="font-medium">{item.title}</span>
-                  </div>
-                  <FiChevronDown
-                    className={`transition-transform duration-200 ${
-                      mobileActiveDropdown === index ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
+                className="" >
+                {item.path ? (
+                  <Link
+                    to={item.path}
+                    onClick={handleLinkClick}
+                    className={`w-full flex items-center p-4 text-left hover:bg-gray-50 dark:hover:bg-[#1e1e1e] transition-colors ${
+                      location.pathname === item.path ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : ''
+                    }`}>
+                    <div className="flex items-center space-x-3">
+                      {item.icon}
+                      <span className="font-medium">{item.title}</span>
+                    </div>
+                  </Link>
+                ) : (
+                  <>
+                    <button
+                      onClick={(e) => handleMobileDropdownClick(e, index)}
+                      className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 dark:hover:bg-[#1e1e1e] transition-colors" >
+                      <div className="flex items-center space-x-3">
+                        {item.icon}
+                        <span className="font-medium">{item.title}</span>
+                      </div>
+                      <FiChevronDown
+                        className={`transition-transform duration-200 ${
+                          mobileActiveDropdown === index ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
 
-                {mobileActiveDropdown === index && (
+                    {mobileActiveDropdown === index && item.dropdown && (
                   <div className="bg-gray-50 dark:bg-[#1e1e1e]">
                     {item.dropdown.map((subItem, subIndex) => (
                       <div key={subIndex}>
@@ -435,8 +470,10 @@ const DropdownNav = () => {
                           </Link>
                         )}
                       </div>
-                    ))}
-                  </div>
+                        ))}
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             ))}

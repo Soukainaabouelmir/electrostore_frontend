@@ -434,6 +434,7 @@ const ProductsManagement = () => {
               onSave={handleSaveproductes}
               onClose={handleCloseModal}
               isOpen={showModal}
+              
             />
           )}
         </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import TablePopup from './TablePopup';
 import SearchAndFilterPopup from './SearchAndFilterPopup/SearchAndFilterPopup';
@@ -8,8 +8,6 @@ import Pagination from '../../Shared/Pagination';
 const PopupManagement = () => {
   const navigate = useNavigate();
   const [Popup, setPopup] = useState([]);
-  const [filteredPopup, setFilteredPopup] = useState([]);
-  const [currentPagePopup, setCurrentPagePopup] = useState([]); 
   const [showModal, setShowModal] = useState(false);
   const [editingPopups, setEditingPopups] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,144 +15,165 @@ const PopupManagement = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10); 
-  const API_BASE_URL = 'http://localhost:8000/api'; 
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  
+  // Refs pour éviter les appels multiples
+  const isFetchingRef = useRef(false);
+  const searchTimeoutRef = useRef(null);
+  
+  const API_BASE_URL = 'http://localhost:8000/api';
 
+  // Vérification de l'authentification - Une seule fois
   useEffect(() => {
     const role = localStorage.getItem("role");
     const token = localStorage.getItem("token");
 
     if (!token || role !== "admin") {
-      navigate("/compte"); 
-      return;
+      navigate("/compte");
     }
   }, [navigate]);
 
- // Dans PopupManagement.js - Modifiez la fonction fetchPopup
-const fetchPopup = async () => {
-  try {
-    setLoading(true);
-    setError(null);
-    
-    const response = await fetch(`${API_BASE_URL}/admin/popups`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Erreur HTTP: ${response.status}`);
+  // Fonction fetchPopup optimisée avec protection contre les appels multiples
+  const fetchPopup = useCallback(async () => {
+    // Empêcher les appels multiples simultanés
+    if (isFetchingRef.current) {
+      console.log('Fetch déjà en cours, ignoré');
+      return;
     }
-    const result = await response.json();
-    
-    console.log('API Response:', result);
 
-    if (Array.isArray(result)) {
-      const simplePopups = result.map(popup => ({
-        id: popup.id,
-        titre: popup.titre || popup.titre, // CORRECTION: utiliser 'titre' au lieu de 'titre'
-        description: popup.description || '',
-        image: popup.image || '',
-        lien: popup.lien_web || popup.lien || popup.lien || '', // CORRECTION: utiliser 'lien' au lieu de 'lien'
-        delai: popup.delai || '5s', // AJOUT: propriété delai
-        is_active: popup.status || popup.is_active || 'active', // CORRECTION: utiliser 'is_active'
-        dateCreation: popup.created_at || new Date().toISOString().split('T')[0]
-      }));
-
-      setPopup(simplePopups);
-      setFilteredPopup(simplePopups);
-    }
-    else if (result.success) {
-      const simplePopups = result.data.map(popup => ({
-        id: popup.id,
-        titre: popup.titre || popup.titre, // CORRECTION
-        description: popup.description || '',
-        image: popup.image || '',
-        lien: popup.lien_web || popup.lien || popup.lien || '', // CORRECTION
-        delai: popup.delai || '5s', // AJOUT
-        is_active: popup.status || popup.is_active || 'active', // CORRECTION
-        dateCreation: popup.created_at || new Date().toISOString().split('T')[0]
-      }));
+    try {
+      isFetchingRef.current = true;
+      setLoading(true);
+      setError(null);
       
-      setPopup(simplePopups);
-      setFilteredPopup(simplePopups);
-    } else {
-      throw new Error(result.message || 'Erreur lors de la récupération des données');
-    }
-  } catch (err) {
-    console.error('Erreur lors de la récupération des Popups:', err);
-    setError(err.message);
-    
-    if (process.env.NODE_ENV === 'development') {
-      const mockPopups = [
-        {
+      const response = await fetch(`${API_BASE_URL}/admin/popups`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      
+      // Normalisation des données
+      const normalizePopup = (popup) => ({
+        id: popup.id,
+        titre: popup.titre || '',
+        description: popup.description || '',
+        image: popup.image || '',
+        lien: popup.lien_web || popup.lien || '',
+        delai: popup.delai || '5s',
+        is_active: popup.status || popup.is_active || 'active',
+        dateCreation: popup.created_at || new Date().toISOString().split('T')[0]
+      });
+
+      let popupsData = [];
+      if (Array.isArray(result)) {
+        popupsData = result.map(normalizePopup);
+      } else if (result.success && Array.isArray(result.data)) {
+        popupsData = result.data.map(normalizePopup);
+      } else {
+        throw new Error(result.message || 'Erreur lors de la récupération des données');
+      }
+
+      setPopup(popupsData);
+      
+    } catch (err) {
+      console.error('Erreur lors de la récupération des Popups:', err);
+      setError(err.message);
+      
+      // Mock data en développement uniquement
+      if (process.env.NODE_ENV === 'development') {
+        const mockPopups = [{
           id: 1,
-          titre: 'Nike', // CORRECTION: 'titre' au lieu de 'titre'
+          titre: 'Nike',
           description: 'Popup de sport et équipements sportifs',
           image: 'https://logo.clearbit.com/nike.com',
-          lien: 'https://www.nike.com', // CORRECTION: 'lien' au lieu de 'lien'
-          delai: '5s', // AJOUT
-          is_active: 'active', // CORRECTION: 'is_active' au lieu de 'status'
+          lien: 'https://www.nike.com',
+          delai: '5s',
+          is_active: 'active',
           dateCreation: '2024-01-15'
-        }
-      ];
-      
-      setPopup(mockPopups);
-      setFilteredPopup(mockPopups);
+        }];
+        setPopup(mockPopups);
+      }
+    } finally {
+      setLoading(false);
+      isFetchingRef.current = false;
     }
-  } finally {
-    setLoading(false);
-  }
-};
+  }, [API_BASE_URL]);
 
+  // Chargement initial - Une seule fois
   useEffect(() => {
-    const role = localStorage.getItem("role");
-    const token = localStorage.getItem("token");
-
-    if (token && role === "admin") {
-      fetchPopup();
-    }
-    
     const savedTheme = localStorage.getItem("darkMode") === "true";
     setIsDarkMode(savedTheme);
-  }, []);
+    fetchPopup();
+  }, [fetchPopup]);
 
-  useEffect(() => {
+  // Filtrage optimisé avec useMemo
+  const filteredPopup = useMemo(() => {
     if (!searchTerm.trim()) {
-      setFilteredPopup(Popup);
-    } else {
-      const filtered = Popup.filter(Popup =>
-        Popup.titre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (Popup.description && Popup.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (Popup.lien && Popup.lien.toLowerCase().includes(searchTerm.toLowerCase()))
-      );
-      setFilteredPopup(filtered);
+      return Popup;
     }
-    setCurrentPage(1);
-  }, [searchTerm, Popup]);
+    
+    const searchLower = searchTerm.toLowerCase();
+    return Popup.filter(popup =>
+      popup.titre.toLowerCase().includes(searchLower) ||
+      (popup.description && popup.description.toLowerCase().includes(searchLower)) ||
+      (popup.lien && popup.lien.toLowerCase().includes(searchLower))
+    );
+  }, [Popup, searchTerm]);
 
-  useEffect(() => {
+  // Pagination optimisée avec useMemo
+  const currentPagePopup = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    setCurrentPagePopup(filteredPopup.slice(startIndex, endIndex));
+    return filteredPopup.slice(startIndex, endIndex);
   }, [filteredPopup, currentPage, itemsPerPage]);
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
+  // Réinitialiser la page quand le filtre change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
-  const handleItemsPerPageChange = (newItemsPerPage) => {
-    setItemsPerPage(newItemsPerPage);
-    setCurrentPage(1); 
-  };
-
-  const handleEditFromActionButtons = async (Popup, formData) => {
-    console.log('handleEditFromActionButtons called with:', Popup, formData);
+  // Gestion de la recherche avec debouncing
+  const handleSearchChange = useCallback((value) => {
+    // Annuler le timeout précédent
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
     
+    // Délai de 300ms avant d'appliquer la recherche
+    searchTimeoutRef.current = setTimeout(() => {
+      setSearchTerm(value);
+    }, 300);
+  }, []);
+
+  // Nettoyage du timeout
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handlePageChange = useCallback((pageNumber) => {
+    setCurrentPage(pageNumber);
+  }, []);
+
+  const handleItemsPerPageChange = useCallback((newItemsPerPage) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
+  }, []);
+
+  const handleEditFromActionButtons = useCallback(async (popup, formData) => {
     try {
-      const url = `${API_BASE_URL}/admin/popups/edit/${Popup.id}`;
+      const url = `${API_BASE_URL}/admin/popups/edit/${popup.id}`;
       
       const headers = {
         'Accept': 'application/json',
@@ -179,6 +198,11 @@ const fetchPopup = async () => {
       const result = await response.json();
       
       if (result.success) {
+        // Mise à jour optimiste de l'état local
+        setPopup(prevPopup => 
+          prevPopup.map(p => p.id === popup.id ? { ...p, ...formData } : p)
+        );
+        // Rafraîchir ensuite pour avoir les données serveur
         await fetchPopup();
         return { success: true };
       } else {
@@ -189,9 +213,9 @@ const fetchPopup = async () => {
       setError(err.message);
       return { success: false, error: err.message };
     }
-  };
+  }, [API_BASE_URL, fetchPopup]);
 
-  const savePopups = async (PopupsData, PopupId = null) => {
+  const savePopups = useCallback(async (PopupsData, PopupId = null) => {
     try {
       const isEditing = PopupId || editingPopups;
       const finalId = PopupId || (editingPopups ? editingPopups.id : null);
@@ -201,7 +225,6 @@ const fetchPopup = async () => {
         : `${API_BASE_URL}/admin/popups/store`;
       
       const method = isEditing ? 'PUT' : 'POST';
-      
       const isFormData = PopupsData instanceof FormData;
       
       const headers = {
@@ -236,12 +259,11 @@ const fetchPopup = async () => {
       setError(err.message);
       return { success: false, error: err.message };
     }
-  };
+  }, [API_BASE_URL, editingPopups, fetchPopup]);
 
-  // CORRECTION PRINCIPALE : Fonction de suppression améliorée
-  const deletePopups = async (PopupsId) => {
+  const deletePopups = useCallback(async (PopupsId) => {
     try {
-      setError(null); // Réinitialiser l'erreur avant la suppression
+      setError(null);
       
       const response = await fetch(`${API_BASE_URL}/admin/popups/delete/${PopupsId}`, {
         method: 'DELETE',
@@ -259,42 +281,39 @@ const fetchPopup = async () => {
       const result = await response.json();
       
       if (result.success) {
-        await fetchPopup();
+        // Mise à jour optimiste - suppression immédiate de l'UI
+        setPopup(prevPopup => prevPopup.filter(p => p.id !== PopupsId));
         return { success: true };
       } else {
         throw new Error(result.message || 'Erreur lors de la suppression');
       }
     } catch (err) {
       console.error('Erreur lors de la suppression:', err);
-     
       return { success: false, error: err.message };
     }
-  };
+  }, [API_BASE_URL]);
 
-  const handleAddPopups = () => {
+  const handleAddPopups = useCallback(() => {
     setEditingPopups(null);
     setShowModal(true);
-  };
+  }, []);
 
-  const handleEditPopups = (Popups) => {
+  const handleEditPopups = useCallback((Popups) => {
     setEditingPopups(Popups);
     setShowModal(true);
-  };
+  }, []);
 
-  const handleDeletePopups = async (Popups) => {
+  const handleDeletePopups = useCallback(async (Popups) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer cette Popup ?')) {
-      setError(null); 
-      
+      setError(null);
       const result = await deletePopups(Popups.id);
       if (!result.success) {
         alert('Erreur lors de la suppression de la Popup: ' + result.error);
-      } else {
-        console.log('Popup supprimée avec succès');
       }
     }
-  };
+  }, [deletePopups]);
 
-  const handleSavePopups = async (PopupsData) => {
+  const handleSavePopups = useCallback(async (PopupsData) => {
     const result = await savePopups(PopupsData);
     if (result.success) {
       setShowModal(false);
@@ -302,19 +321,20 @@ const fetchPopup = async () => {
     } else {
       alert(`Erreur lors de la sauvegarde: ${result.error}`);
     }
-  };
+  }, [savePopups]);
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setShowModal(false);
     setEditingPopups(null);
-    setError(null); 
-  };
+    setError(null);
+  }, []);
 
-  const handleRefresh = () => {
-    setError(null); 
+  const handleRefresh = useCallback(() => {
+    setError(null);
     fetchPopup();
-  };
+  }, [fetchPopup]);
 
+  // Vérification finale de l'authentification
   const role = localStorage.getItem("role");
   const token = localStorage.getItem("token");
 
@@ -354,7 +374,7 @@ const fetchPopup = async () => {
           
           <SearchAndFilterPopup 
             searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
+            setSearchTerm={handleSearchChange}
             onAddNew={handleAddPopups}
             onRefresh={handleRefresh}
             currentViewData={currentPagePopup}

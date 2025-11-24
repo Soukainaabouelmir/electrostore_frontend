@@ -17,6 +17,7 @@ import CategoriesManagement from './Components/EspaceAdmin/ListeProducts/Categor
 import MarqueManagement from './Components/EspaceAdmin/ListeProducts/Marque/MarqueManagement';
 import ProductsManagement from './Components/EspaceAdmin/ListeProducts/Products/ProductsManagement';
 import PopupManagement from './Components/EspaceAdmin/Popups/PopupManagement';
+import ConfigurationPC from './Components/ConfigurationPc/ConfigurationPc';
 
 function AppWrapper() {
   const location = useLocation();
@@ -33,6 +34,7 @@ function AppWrapper() {
               <Route path="/pc/gamer" element={<PcGamerPage />} />
               <Route path="/pc/bureau" element={<PcBureauPage />} />
               <Route path="/pc/portable" element={<PcPortablePage />} />
+              <Route path="/configuration" element={<ConfigurationPC />} />
               <Route path="/compte" element={<LoginPage />} />
               <Route path="/admin/dashboard" element={<Layout> <AdminDashboard /></Layout>} />
               <Route path="/admin/categories" element={<Layout> <CategoriesManagement /></Layout>} />
