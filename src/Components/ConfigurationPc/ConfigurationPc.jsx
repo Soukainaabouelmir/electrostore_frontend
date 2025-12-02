@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiCpu, FiMonitor, FiHardDrive, FiZap, FiBox, FiShoppingCart, FiCheck, FiAlertCircle, FiStar } from 'react-icons/fi';
+import { FiCpu, FiMonitor, FiHardDrive, FiZap, FiBox, FiShoppingCart, FiCheck, FiAlertCircle, FiStar, FiSettings } from 'react-icons/fi';
 
 const ConfigurationPC = () => {
   const [selectedComponents, setSelectedComponents] = useState({
@@ -208,6 +208,7 @@ const ConfigurationPC = () => {
     { key: 'psu', name: 'Alimentation', icon: FiZap, color: 'yellow' },
     { key: 'case', name: 'Boîtier', icon: FiBox, color: 'red' },
     { key: 'cooling', name: 'Refroidissement', icon: FiCpu, color: 'indigo' },
+   
   ];
 
   const selectComponent = (category, component) => {
